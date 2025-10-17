@@ -43,7 +43,7 @@ This project is still **in development**, with new weapons and features being ad
 1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/your-repo-name.git
-````
+
 
 2. **Open the project** in your preferred game engine or IDE
    (e.g., Unity, Godot, or Java — depending on what you’re using).
@@ -58,9 +58,6 @@ This project is still **in development**, with new weapons and features being ad
 <p align="center">
   <img src="assets/Screenshot1.png" alt="Main Menu" width="45%">
 </p>
-
-
-> 🧠 Tip: Keep your screenshots organized in a folder like `/assets` and name them clearly (e.g., `menu.png`, `wave1.png`).
 
 ---
 
@@ -98,16 +95,11 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 👤 Author
 
 **Your Name**
-📧 [[your.email@example.com](mailto:your.email@example.com)]
-🐙 [GitHub Profile](https://github.com/yourusername)
+📧 [Email](crapeling29@gmai.com/ahron.badili@bisu.edu.ph)
+🐙 [GitHub Profile](https://github.com/mo-rale)
 
 ---
 
 > 🎯 *Made with passion for zombie games — still under heavy development! Stay tuned for more updates.*
 
-```
 
----
-
-Would you like me to **fill in your actual GitHub link and name**, so it’s 100% ready to upload?
-```
