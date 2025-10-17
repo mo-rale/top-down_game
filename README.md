@@ -94,8 +94,9 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 👤 Author
 
-**Your Name**
-📧 [Email](crapeling29@gmai.com/ahron.badili@bisu.edu.ph)
+**Ahron Badili**
+📧 [Email1](crapeling29@gmai.com)
+    [Email2](ahron.badili@bisu.edu.ph)
 🐙 [GitHub Profile](https://github.com/mo-rale)
 
 ---
