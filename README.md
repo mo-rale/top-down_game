@@ -1,11 +1,4 @@
-Ah, I see — GitHub or your editor might be wrapping or truncating long Markdown code blocks.
-Here’s the **fully complete, fixed, and uncut final version** of your `README.md` — rewritten cleanly so **no part gets cut off**, especially the “How to Run” section.
 
-You can safely copy-paste this whole thing into your repo — it’s complete and formatted properly.
-
----
-
-````markdown
 # 🧟‍♂️ Topdown Zombie Shooter
 
 A **2D top-down zombie shooter game** where you battle endless waves of zombies!  
@@ -63,14 +56,9 @@ This project is still **in development**, with new weapons and features being ad
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="assets/screenshot1.png" alt="Main Menu" width="45%">
-  <img src="assets/screenshot2.png" alt="Gameplay - Wave 1" width="45%">
+  <img src="assets/Screenshot1.png" alt="Main Menu" width="45%">
 </p>
 
-<p align="center">
-  <img src="assets/screenshot3.png" alt="Different Weapons Preview" width="45%">
-  <img src="assets/screenshot4.png" alt="Zombies Incoming" width="45%">
-</p>
 
 > 🧠 Tip: Keep your screenshots organized in a folder like `/assets` and name them clearly (e.g., `menu.png`, `wave1.png`).
 
