@@ -1,7 +1,7 @@
 
 # 🧟‍♂️ Topdown Zombie Shooter
 
-A **2D top-down zombie shooter game** where you battle endless waves of zombies!  
+A **2D top-down zombie shooter game** where you battle endless waves of zombies! it has no name yet 
 Survive as long as you can, unlock weapons, and fight through increasingly difficult hordes.  
 This project is still **in development**, with new weapons and features being added regularly.
 
