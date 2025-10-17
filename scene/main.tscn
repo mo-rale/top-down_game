@@ -1,0 +1,84 @@
+[gd_scene load_steps=7 format=3 uid="uid://istk1kbeacdb"]
+
+[ext_resource type="Script" uid="uid://chgovofepf0ua" path="res://script/main.gd" id="1_brvut"]
+[ext_resource type="Texture2D" uid="uid://dm5pv1lby52xg" path="res://icon.svg" id="1_v0l8b"]
+[ext_resource type="PackedScene" uid="uid://dm8ktnw8rk4iy" path="res://scene/player.tscn" id="2_wp4xf"]
+[ext_resource type="PackedScene" uid="uid://cglkiia3xaewl" path="res://scene/spawner.tscn" id="4_brvut"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_brvut"]
+bg_color = Color(0.886275, 0.886275, 0.886275, 0.94902)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.701961, 0.701961, 0.701961, 0.729412)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="LabelSettings" id="LabelSettings_0ha60"]
+font_size = 37
+font_color = Color(0.288518, 0.288518, 0.288518, 1)
+
+[node name="main" type="Node2D"]
+script = ExtResource("1_brvut")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_v0l8b")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(220, -1)
+texture = ExtResource("1_v0l8b")
+
+[node name="player" parent="." instance=ExtResource("2_wp4xf")]
+position = Vector2(115, 14)
+
+[node name="spawner" parent="." instance=ExtResource("4_brvut")]
+position = Vector2(-995, -440)
+
+[node name="spawner2" parent="." instance=ExtResource("4_brvut")]
+position = Vector2(1035, 722)
+
+[node name="ui" type="CanvasLayer" parent="."]
+
+[node name="GameOver" type="ColorRect" parent="ui"]
+unique_name_in_owner = true
+offset_right = 1153.0
+offset_bottom = 649.0
+color = Color(0.376471, 0.376471, 0.376471, 0.611765)
+
+[node name="PanelContainer" type="PanelContainer" parent="ui/GameOver"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -134.0
+offset_top = -181.0
+offset_right = 134.0
+offset_bottom = 181.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_brvut")
+
+[node name="MarginContainer" type="MarginContainer" parent="ui/GameOver/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ui/GameOver/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="ui/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+text = "RETRY"
+
+[node name="Label" type="Label" parent="ui/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "GAME OVER"
+label_settings = SubResource("LabelSettings_0ha60")
+
+[connection signal="pressed" from="ui/GameOver/PanelContainer/MarginContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
