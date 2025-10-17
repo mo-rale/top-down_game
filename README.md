@@ -93,10 +93,8 @@ This project is open source and available under the [MIT License](LICENSE).
 ---
 
 ## 👤 Author
-
-**Ahron Badili**
-📧 [Email1](crapeling29@gmai.com)
-    [Email2](ahron.badili@bisu.edu.ph)
+📧 [personal email](crapeling29@gmai.com)
+    [university email](ahron.badili@bisu.edu.ph)
 🐙 [GitHub Profile](https://github.com/mo-rale)
 
 ---
