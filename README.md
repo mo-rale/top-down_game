@@ -1,3 +1,11 @@
+Ah, I see — GitHub or your editor might be wrapping or truncating long Markdown code blocks.
+Here’s the **fully complete, fixed, and uncut final version** of your `README.md` — rewritten cleanly so **no part gets cut off**, especially the “How to Run” section.
+
+You can safely copy-paste this whole thing into your repo — it’s complete and formatted properly.
+
+---
+
+````markdown
 # 🧟‍♂️ Topdown Zombie Shooter
 
 A **2D top-down zombie shooter game** where you battle endless waves of zombies!  
@@ -42,3 +50,76 @@ This project is still **in development**, with new weapons and features being ad
 1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/your-repo-name.git
+````
+
+2. **Open the project** in your preferred game engine or IDE
+   (e.g., Unity, Godot, or Java — depending on what you’re using).
+3. **Run or build the game** directly from your editor.
+
+> 💡 Tip: If your game requires additional assets or dependencies, include them in a `/resources` or `/assets` folder before running.
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="assets/screenshot1.png" alt="Main Menu" width="45%">
+  <img src="assets/screenshot2.png" alt="Gameplay - Wave 1" width="45%">
+</p>
+
+<p align="center">
+  <img src="assets/screenshot3.png" alt="Different Weapons Preview" width="45%">
+  <img src="assets/screenshot4.png" alt="Zombies Incoming" width="45%">
+</p>
+
+> 🧠 Tip: Keep your screenshots organized in a folder like `/assets` and name them clearly (e.g., `menu.png`, `wave1.png`).
+
+---
+
+## 💡 Future Plans
+
+* Add boss waves
+* Introduce player customization
+* Implement multiplayer or co-op mode
+* Add save/load system
+* Improve graphics and UI effects
+* Performance optimizations for low-end devices
+
+---
+
+## 🧑‍💻 Contributing
+
+Contributions are welcome!
+If you’d like to suggest a feature or fix a bug:
+
+1. Fork the repository
+2. Create a new branch (`feature/your-feature-name`)
+3. Commit your changes
+4. Submit a pull request
+
+Bug reports and ideas are also welcome in the **Issues** section!
+
+---
+
+## 📝 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+## 👤 Author
+
+**Your Name**
+📧 [[your.email@example.com](mailto:your.email@example.com)]
+🐙 [GitHub Profile](https://github.com/yourusername)
+
+---
+
+> 🎯 *Made with passion for zombie games — still under heavy development! Stay tuned for more updates.*
+
+```
+
+---
+
+Would you like me to **fill in your actual GitHub link and name**, so it’s 100% ready to upload?
+```
