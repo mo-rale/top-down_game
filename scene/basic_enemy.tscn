@@ -1,28 +1,27 @@
-[gd_scene load_steps=5 format=3 uid="uid://gykdyw0fmbe0"]
+[gd_scene load_steps=5 format=3 uid="uid://dkqo2egpcrk3o"]
 
-[ext_resource type="Script" uid="uid://civu3esu7cueq" path="res://script/enemy.gd" id="1_f87vc"]
-[ext_resource type="Texture2D" uid="uid://dm5pv1lby52xg" path="res://icon.svg" id="2_8u16h"]
+[ext_resource type="Script" uid="uid://civu3esu7cueq" path="res://script/enemy.gd" id="1_0xbl2"]
+[ext_resource type="Texture2D" uid="uid://dm5pv1lby52xg" path="res://icon.svg" id="1_3puoo"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_iifgy"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0xbl2"]
 size = Vector2(17.92802, 17.255726)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_f87vc"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yveyc"]
 size = Vector2(61.5, 65.5)
 
-[node name="enemy" type="CharacterBody2D" groups=["enemy"]]
-collision_mask = 3
-script = ExtResource("1_f87vc")
+[node name="basic_enemy" type="CharacterBody2D"]
+script = ExtResource("1_0xbl2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-4.5, 0.5000006)
 scale = Vector2(2.39848, 2.60783)
-shape = SubResource("RectangleShape2D_iifgy")
+shape = SubResource("RectangleShape2D_0xbl2")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(-4.546793, 0.04554347)
 rotation = 1.56078
 scale = Vector2(0.353772, 0.3368898)
-texture = ExtResource("2_8u16h")
+texture = ExtResource("1_3puoo")
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
 offset_left = -29.0
@@ -34,4 +33,4 @@ offset_bottom = -29.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 position = Vector2(-4.75, 0.25)
-shape = SubResource("RectangleShape2D_f87vc")
+shape = SubResource("RectangleShape2D_yveyc")

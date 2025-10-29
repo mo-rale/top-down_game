@@ -1,25 +1,36 @@
-[gd_scene load_steps=5 format=3 uid="uid://ckpywoaogpw7"]
+[gd_scene load_steps=6 format=3 uid="uid://ckpywoaogpw7"]
 
 [ext_resource type="Script" uid="uid://b6vvxjyi6up41" path="res://script/revolver.gd" id="1_ra0sn"]
 [ext_resource type="Texture2D" uid="uid://dk5ebpjvfnne5" path="res://assets/revolver.png" id="2_ge04k"]
 [ext_resource type="AudioStream" uid="uid://cnvyxj5y7rkmb" path="res://assets/sfx/clean-revolver-reload-6889.ogg" id="3_yuc6k"]
 [ext_resource type="AudioStream" uid="uid://db4rssm0d5g2q" path="res://assets/sfx/single-pistol-gunshot-33-37187.ogg" id="4_2lbdi"]
 
-[node name="gun" type="Node2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_yuc6k"]
+radius = 68.06615
+
+[node name="revolver" type="Node2D" groups=["weapon_pickup"]]
 script = ExtResource("1_ra0sn")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(13, -4)
+position = Vector2(37.710934, -13.466655)
 scale = Vector2(0.821289, 0.730556)
 texture = ExtResource("2_ge04k")
 
 [node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(49, -8)
+position = Vector2(73.71094, -17.466656)
 
 [node name="reloading" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(24.710936, -9.466656)
 stream = ExtResource("3_yuc6k")
 volume_db = -15.957
 
 [node name="shooting" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(24.710936, -9.466656)
 stream = ExtResource("4_2lbdi")
 volume_db = -15.848
+
+[node name="pickable_area" type="Area2D" parent="." groups=["weapon_pickup"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="pickable_area"]
+position = Vector2(33, -14)
+shape = SubResource("CircleShape2D_yuc6k")

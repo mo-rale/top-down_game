@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bibgv236ylnue"
-path="res://.godot/imported/M4A1-Reload.png-d748ae59bc6f6cfb36a3963e94f06bd7.ctex"
+uid="uid://1ak0c3tcmgpf"
+path="res://.godot/imported/guy.png-9ade64f07c5fb4bcbbd7e86e668e48fd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/M4A1-Reload.png"
-dest_files=["res://.godot/imported/M4A1-Reload.png-d748ae59bc6f6cfb36a3963e94f06bd7.ctex"]
+source_file="res://assets/player/guy.png"
+dest_files=["res://.godot/imported/guy.png-9ade64f07c5fb4bcbbd7e86e668e48fd.ctex"]
 
 [params]
 

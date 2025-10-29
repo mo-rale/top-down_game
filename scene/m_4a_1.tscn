@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://i1af5rulk5n"]
+[gd_scene load_steps=41 format=3 uid="uid://i1af5rulk5n"]
 
 [ext_resource type="Script" uid="uid://bo5k7rcppdikm" path="res://script/m_4a_1.gd" id="1_uub0g"]
 [ext_resource type="Texture2D" uid="uid://bibgv236ylnue" path="res://assets/M4A1-Reload.png" id="2_uub0g"]
@@ -256,7 +256,10 @@ animations = [{
 "speed": 12.3
 }]
 
-[node name="M4A1" type="Node2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_uub0g"]
+radius = 77.10383
+
+[node name="M4A1" type="Node2D" groups=["weapon_pickup"]]
 script = ExtResource("1_uub0g")
 
 [node name="Sprite2D" type="AnimatedSprite2D" parent="."]
@@ -275,3 +278,12 @@ volume_db = -0.109
 [node name="shooting" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_uub0g")
 volume_db = -1.981
+
+[node name="pickable_area" type="Area2D" parent="." groups=["weapon_pickup"]]
+collision_layer = 4
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="pickable_area"]
+position = Vector2(30, -5)
+shape = SubResource("CircleShape2D_uub0g")
+debug_color = Color(0.8982647, 0.31529412, 0, 0.41960785)

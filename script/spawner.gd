@@ -2,7 +2,7 @@ extends Node2D
 
 @export var enemy_scene: PackedScene
 @export var spawn_interval: float = 2.0   # seconds between spawns
-@export var max_enemies: int = 10         # limit how many enemies can exist
+@export var max_enemies: int = 10      # limit how many enemies can exist
 @export var spawn_radius: float = 200.0   # distance from spawner position
 
 var timer: Timer
