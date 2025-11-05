@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://10gjdamn17ht"]
+
+[node name="Ak_47" type="Node2D"]
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="Marker2D" type="Marker2D" parent="."]
+
+[node name="shooting" type="AudioStreamPlayer2D" parent="."]
+
+[node name="reloading" type="AudioStreamPlayer2D" parent="."]
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]

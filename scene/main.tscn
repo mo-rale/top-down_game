@@ -1,40 +1,121 @@
-[gd_scene load_steps=9 format=3 uid="uid://istk1kbeacdb"]
+[gd_scene load_steps=21 format=3 uid="uid://istk1kbeacdb"]
 
 [ext_resource type="Script" uid="uid://chgovofepf0ua" path="res://script/main.gd" id="1_brvut"]
-[ext_resource type="Texture2D" uid="uid://dm5pv1lby52xg" path="res://icon.svg" id="1_v0l8b"]
 [ext_resource type="PackedScene" uid="uid://dm8ktnw8rk4iy" path="res://scene/player.tscn" id="2_wp4xf"]
 [ext_resource type="PackedScene" uid="uid://cglkiia3xaewl" path="res://scene/spawner.tscn" id="4_brvut"]
 [ext_resource type="PackedScene" uid="uid://i1af5rulk5n" path="res://scene/m_4a_1.tscn" id="5_0ha60"]
 [ext_resource type="PackedScene" uid="uid://v2kd6stvs6ao" path="res://scene/store.tscn" id="6_4j5ol"]
+[ext_resource type="Texture2D" uid="uid://dk5vntelpu6cw" path="res://assets/ui/ui-panel.png" id="6_of57s"]
+[ext_resource type="FontFile" uid="uid://blpbi0aud4wru" path="res://assets/fonts/Jersey10-Regular.ttf" id="6_p1hux"]
+[ext_resource type="AudioStream" uid="uid://bg4yldj88yupb" path="res://assets/sfx/ambient.ogg" id="7_of57s"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_brvut"]
-bg_color = Color(0.886275, 0.886275, 0.886275, 0.94902)
-border_width_left = 5
-border_width_top = 5
-border_width_right = 5
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tqoya"]
+bg_color = Color(0.54509807, 0, 0.039215688, 1)
+border_width_bottom = 4
+border_color = Color(0.4479831, 1.4679879e-06, 0.025672438, 1)
+border_blend = true
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.34615496, 3.3691526e-07, 2.4065375e-07, 1)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y507g"]
+bg_color = Color(0.6441585, 0, 0.056777574, 1)
+border_width_bottom = 6
+border_color = Color(0.42226234, 0, 0.022772873, 1)
+border_blend = true
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_size = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_of57s"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b5f6u"]
+bg_color = Color(0.33333334, 0.83137256, 0, 1)
 border_width_bottom = 5
-border_color = Color(0.701961, 0.701961, 0.701961, 0.729412)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+border_color = Color(0.14378732, 0.3987336, 0, 1)
+border_blend = true
+shadow_size = 3
+
+[sub_resource type="Theme" id="Theme_b5f6u"]
+Button/font_sizes/font_size = 20
+Button/styles/hover = SubResource("StyleBoxFlat_tqoya")
+Button/styles/normal = SubResource("StyleBoxFlat_y507g")
+ProgressBar/styles/background = SubResource("StyleBoxFlat_of57s")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_b5f6u")
 
 [sub_resource type="LabelSettings" id="LabelSettings_0ha60"]
-font_size = 37
-font_color = Color(0.288518, 0.288518, 0.288518, 1)
+font_size = 50
+font_color = Color(0.23137255, 0, 0, 1)
+
+[sub_resource type="Theme" id="Theme_of57s"]
+Button/styles/normal = null
+
+[sub_resource type="Animation" id="Animation_of57s"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UI/ShopUI/Panel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1182, 84)]
+}
+
+[sub_resource type="Animation" id="Animation_b5f6u"]
+resource_name = "store_ui_close"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UI/ShopUI/Panel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.099999994, 0.56666666),
+"transitions": PackedFloat32Array(0.32987696, 0.32987696),
+"update": 0,
+"values": [Vector2(874, 84), Vector2(1179, 84)]
+}
+
+[sub_resource type="Animation" id="Animation_p1hux"]
+resource_name = "store_ui_open"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UI/ShopUI/Panel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.53333336),
+"transitions": PackedFloat32Array(0.28717485, 0.28717485),
+"update": 0,
+"values": [Vector2(1182, 84), Vector2(874, 84)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_of57s"]
+_data = {
+&"RESET": SubResource("Animation_of57s"),
+&"store_ui_close": SubResource("Animation_b5f6u"),
+&"store_ui_open": SubResource("Animation_p1hux")
+}
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_p1hux"]
+graph_offset = Vector2(-105.66104, 69.53195)
 
 [node name="main" type="Node2D" groups=["game_manager"]]
 script = ExtResource("1_brvut")
+debug_mode = true
 
 [node name="store" parent="." instance=ExtResource("6_4j5ol")]
 position = Vector2(376, -205)
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_v0l8b")
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(220, -1)
-texture = ExtResource("1_v0l8b")
 
 [node name="player" parent="." instance=ExtResource("2_wp4xf")]
 position = Vector2(115, 14)
@@ -47,46 +128,76 @@ position = Vector2(1965, -12)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="GameOver" type="ColorRect" parent="UI"]
+[node name="GameOver" type="Control" parent="UI"]
 unique_name_in_owner = true
-offset_right = 1150.0
-offset_bottom = 655.0
-size_flags_horizontal = 4
-color = Color(0.376471, 0.376471, 0.376471, 0.611765)
-metadata/_edit_use_anchors_ = true
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_top = -3.0
+offset_right = 40.0
+offset_bottom = 37.0
 
-[node name="PanelContainer" type="PanelContainer" parent="UI/GameOver"]
+[node name="PanelContainer" type="NinePatchRect" parent="UI/GameOver"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -134.0
-offset_top = -181.0
-offset_right = 134.0
-offset_bottom = 181.0
+offset_left = 422.0
+offset_top = 129.5
+offset_right = 690.0
+offset_bottom = 359.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_brvut")
+texture = ExtResource("6_of57s")
+region_rect = Rect2(0, 0, 60, 60)
+patch_margin_left = 12
+patch_margin_top = 12
+patch_margin_right = 12
+patch_margin_bottom = 12
+
+[node name="Button" type="Button" parent="UI/GameOver/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 75.0
+offset_top = 188.5
+offset_right = 194.0
+offset_bottom = 215.5
+size_flags_vertical = 4
+theme = SubResource("Theme_b5f6u")
+text = "RETRY"
+
+[node name="Label" type="Label" parent="UI/GameOver/PanelContainer"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 8.0
+offset_right = 243.0
+offset_bottom = 63.0
+size_flags_horizontal = 4
+text = "GAME OVER"
+label_settings = SubResource("LabelSettings_0ha60")
+horizontal_alignment = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="UI/GameOver/PanelContainer"]
-layout_mode = 2
+layout_mode = 0
+offset_left = 17.0
+offset_top = 81.5
+offset_right = 247.0
+offset_bottom = 170.5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/GameOver/PanelContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
+[node name="highestKill_label" type="Label" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 4
-text = "RETRY"
+theme_override_font_sizes/font_size = 19
+text = "Highest Kill: "
 
-[node name="Label" type="Label" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="total_time" type="Label" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 4
-text = "GAME OVER"
-label_settings = SubResource("LabelSettings_0ha60")
+theme_override_font_sizes/font_size = 19
+text = "Total Time:"
 
 [node name="labels" type="Control" parent="UI"]
 layout_mode = 3
@@ -95,76 +206,266 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="CurrencyLabel" type="Label" parent="UI/labels"]
+texture_filter = 1
 layout_mode = 0
-offset_left = 24.0
-offset_top = 27.0
-offset_right = 188.0
-offset_bottom = 76.0
-text = "Cash
-"
+offset_left = 7.0
+offset_top = 30.0
+offset_right = 237.0
+offset_bottom = 53.0
+theme_override_fonts/font = ExtResource("6_p1hux")
+theme_override_font_sizes/font_size = 21
+text = "Cash"
 
 [node name="TimeLabel" type="Label" parent="UI/labels"]
-layout_mode = 0
-offset_left = 557.0
-offset_top = 26.0
-offset_right = 597.0
-offset_bottom = 49.0
-text = "time"
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 501.0
+offset_top = -12.0
+offset_right = 573.0
+offset_bottom = 11.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("6_p1hux")
+theme_override_font_sizes/font_size = 20
+text = "00:00"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="KillsLabel" type="Label" parent="UI/labels"]
+texture_filter = 1
 layout_mode = 0
-offset_left = 978.0
-offset_top = 37.0
-offset_right = 1018.0
-offset_bottom = 60.0
-text = "kill"
+offset_left = 1065.0
+offset_top = 25.0
+offset_right = 1137.0
+offset_bottom = 53.0
+theme_override_fonts/font = ExtResource("6_p1hux")
+theme_override_font_sizes/font_size = 25
+text = "kill: 0"
 
 [node name="Notification" type="Label" parent="UI/labels"]
+texture_filter = 1
 layout_mode = 0
-offset_left = 40.0
-offset_top = 101.0
-offset_right = 134.0
-offset_bottom = 124.0
-text = "notification:"
+offset_left = 256.0
+offset_top = 100.0
+offset_right = 897.0
+offset_bottom = 128.0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_constants/line_spacing = 7
+theme_override_fonts/font = ExtResource("6_p1hux")
+theme_override_font_sizes/font_size = 21
+text = "Preperation Phase Get Ready!"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Current_weapon" type="Label" parent="UI/labels"]
+texture_filter = 1
 layout_mode = 0
-offset_left = 54.0
-offset_top = 515.0
-offset_right = 182.0
-offset_bottom = 538.0
+offset_left = 13.0
+offset_top = 541.0
+offset_right = 261.0
+offset_bottom = 566.0
+theme_override_fonts/font = ExtResource("6_p1hux")
+theme_override_font_sizes/font_size = 21
 text = "Current Weapon"
 
-[node name="Button" type="Button" parent="UI/labels"]
+[node name="Build" type="Button" parent="UI/labels"]
 layout_mode = 0
-offset_left = 949.0
-offset_top = 512.0
-offset_right = 1042.0
-offset_bottom = 605.0
+offset_left = 976.0
+offset_top = 549.0
+offset_right = 1069.0
+offset_bottom = 642.0
 text = "build"
 
-[node name="Button2" type="Button" parent="UI/labels"]
+[node name="Inventory" type="Button" parent="UI/labels"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 516.0
-offset_top = 511.0
-offset_right = 589.0
-offset_bottom = 558.0
+offset_left = 514.0
+offset_top = 551.0
+offset_right = 597.0
+offset_bottom = 598.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "Invetory"
+text = "Inventory"
 
 [node name="Current_Ammo" type="Label" parent="UI/labels"]
+texture_filter = 1
 layout_mode = 0
-offset_left = 54.0
-offset_top = 542.0
-offset_right = 94.0
-offset_bottom = 565.0
+offset_left = 15.0
+offset_top = 573.0
+offset_right = 98.0
+offset_bottom = 598.0
+theme_override_fonts/font = ExtResource("6_p1hux")
+theme_override_font_sizes/font_size = 21
 text = "Ammo"
+
+[node name="Wave" type="Label" parent="UI/labels"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 296.0
+offset_top = 41.0
+offset_right = 854.0
+offset_bottom = 85.0
+theme_override_fonts/font = ExtResource("6_p1hux")
+theme_override_font_sizes/font_size = 40
+text = "00:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseMenu" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1.5
+offset_top = -4.5
+offset_right = 1.5
+offset_bottom = 4.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/PauseMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -116.0
+offset_top = -177.0
+offset_right = 115.0
+offset_bottom = 123.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_of57s")
+region_rect = Rect2(0, 0, 60, 61)
+patch_margin_left = 12
+patch_margin_top = 12
+patch_margin_right = 12
+patch_margin_bottom = 13
+
+[node name="resume" type="Button" parent="UI/PauseMenu/NinePatchRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -87.5
+offset_top = -89.0
+offset_right = 89.5
+offset_bottom = -57.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "RESUME"
+
+[node name="settingd" type="Button" parent="UI/PauseMenu/NinePatchRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -86.5
+offset_top = -41.0
+offset_right = 88.5
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "SETTINGS
+"
+
+[node name="menu" type="Button" parent="UI/PauseMenu/NinePatchRect"]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 157.0
+offset_right = 205.0
+offset_bottom = 186.0
+theme = SubResource("Theme_of57s")
+text = "MENU"
+
+[node name="Label" type="Label" parent="UI/PauseMenu/NinePatchRect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.057000004
+anchor_right = 0.5
+anchor_bottom = 0.057000004
+offset_left = -20.5
+offset_top = -0.10000038
+offset_right = 20.5
+offset_bottom = 17.9
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 29
+text = "PAUSED"
+
+[node name="ShopUI" type="Control" parent="UI"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -25.0
+offset_top = 10.0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="NinePatchRect" parent="UI/ShopUI"]
+layout_mode = 0
+offset_left = 1182.0
+offset_top = 84.0
+offset_right = 1480.0002
+offset_bottom = 484.0
+tooltip_text = "GUN SHOP"
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
+texture = ExtResource("6_of57s")
+region_rect = Rect2(0, 0, 60, 60)
+patch_margin_left = 12
+patch_margin_top = 12
+patch_margin_right = 12
+patch_margin_bottom = 12
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="Label" type="Label" parent="UI/ShopUI/Panel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 13.0
+offset_top = 7.0
+offset_right = -162.00024
+offset_bottom = 45.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 34
+text = "GUN STORE"
+
+[node name="Sfx" type="Node" parent="."]
+
+[node name="ambiance" type="AudioStreamPlayer2D" parent="Sfx"]
+stream = ExtResource("7_of57s")
+volume_db = -13.126
+autoplay = true
+
+[node name="Music" type="Node" parent="."]
 
 [node name="M4A1" parent="." instance=ExtResource("5_0ha60")]
 position = Vector2(407, 26)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_of57s")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeBlendTree_p1hux")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]

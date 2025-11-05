@@ -4,9 +4,11 @@
 [ext_resource type="PackedScene" uid="uid://dkqo2egpcrk3o" path="res://scene/basic_enemy.tscn" id="2_yvbw6"]
 [ext_resource type="Texture2D" uid="uid://dk5ebpjvfnne5" path="res://assets/revolver.png" id="3_yvbw6"]
 
-[node name="spawner" type="Node2D"]
+[node name="spawner" type="Node2D" groups=["spawners"]]
 script = ExtResource("1_keuh2")
 enemy_scene = ExtResource("2_yvbw6")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("3_yvbw6")
+
+[node name="Timer" type="Timer" parent="."]

@@ -39,3 +39,11 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.has_method("take_damage"):
 		body.take_damage(damage, velocity)
 		queue_free()
+
+
+func _on_area_2d_area_entered(area: Area2D) -> void:
+	var parent = area.get_parent()
+	print("naigo sa aread")
+	if parent.has_method("take_damage"):
+		parent.take_damage(damage, velocity)
+		queue_free()

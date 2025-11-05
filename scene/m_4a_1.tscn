@@ -1,9 +1,9 @@
 [gd_scene load_steps=41 format=3 uid="uid://i1af5rulk5n"]
 
-[ext_resource type="Script" uid="uid://bo5k7rcppdikm" path="res://script/m_4a_1.gd" id="1_uub0g"]
+[ext_resource type="Script" uid="uid://bo5k7rcppdikm" path="res://script/weapons/m_4a_1.gd" id="1_uub0g"]
 [ext_resource type="Texture2D" uid="uid://bibgv236ylnue" path="res://assets/M4A1-Reload.png" id="2_uub0g"]
-[ext_resource type="AudioStream" uid="uid://bpf6ox1fytixu" path="res://assets/sfx/m4a1-or-m16-reload-sound-84436.ogg" id="3_uub0g"]
-[ext_resource type="AudioStream" uid="uid://c5evlvvr40c74" path="res://assets/sfx/M4A1 [SINGLE SHOT] Sound Effect (mp3cut.net).ogg" id="4_uub0g"]
+[ext_resource type="AudioStream" uid="uid://bpf6ox1fytixu" path="res://assets/sfx/guns/m4a1-or-m16-reload-sound-84436.ogg" id="3_uub0g"]
+[ext_resource type="AudioStream" uid="uid://c5evlvvr40c74" path="res://assets/sfx/guns/M4A1 [SINGLE SHOT] Sound Effect (mp3cut.net).ogg" id="4_uub0g"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uub0g"]
 atlas = ExtResource("2_uub0g")
@@ -261,6 +261,8 @@ radius = 77.10383
 
 [node name="M4A1" type="Node2D" groups=["weapon_pickup"]]
 script = ExtResource("1_uub0g")
+weapon_name = "M4A1"
+price = 1200
 
 [node name="Sprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(28.843, -4.625)

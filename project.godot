@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 window/stretch/mode="canvas_items"
 
+[gui]
+
+theme/custom_font="uid://blpbi0aud4wru"
+
 [input]
 
 left={
