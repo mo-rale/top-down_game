@@ -21,13 +21,16 @@ var current_state: GameState = GameState.PREPARATION
 var current_wave: int = 0
 var wave_timer: float = 0.0
 var preparation_timer: float = 0.0
-var wave_duration: float = 30.0  
-var preparation_duration: float = 10.0
+var wave_duration: float = 30.0
+var preparation_duration: float = 20
 var cleanup_timer: float = 0.0
-var cleanup_duration: float = 11.0
+var cleanup_duration: float = 10.0
 
 # ---- ANIMATION Reference ----
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var main_ui: AnimationPlayer = $Main_ui
+@onready var store_ui: AnimationPlayer = $Store_ui
+@onready var game_over_ui: AnimationPlayer = $GameOver_ui
+@onready var pause_ui: AnimationPlayer = $Pause_ui
 
 # --- UI References ---
 @onready var currency_label: Label = $UI/labels/CurrencyLabel
@@ -37,16 +40,27 @@ var cleanup_duration: float = 11.0
 @onready var notification_label: Label = $UI/labels/Notification
 @onready var current_ammo_label: Label = $UI/labels/Current_Ammo
 @onready var current_weapon_label: Label = $UI/labels/Current_weapon
-@onready var game_over_screen: Control = %GameOver
-@onready var restart_button: Button = %Button
-@onready var pause_menu: Control = $UI/PauseMenu
+@onready var restart_button: Button = %retry
+@onready var home: Button = $UI/GameOver/PanelContainer/home
 @onready var resume_button: Button = $UI/PauseMenu/NinePatchRect/resume
 
 # --- Audio ---
 @onready var ambiance: AudioStreamPlayer2D = $Sfx/ambiance
 
-# --- Store UI References ---
+# --- Inventory -----
+var inventory = []
+
+@onready var sell_button: Button = $UI/ShopUI/Panel/sell
+@onready var buy_button: Button = $UI/ShopUI/Panel/buy
+
+# ---- LISTS -------
+@onready var buy_list: ItemList = $UI/ShopUI/Panel/TabContainer/BUY/buy_list
+@onready var sell_list: ItemList = $UI/ShopUI/Panel/TabContainer/SELL/sell_list
+
+# --- UI CONTROL References ---
 @onready var shop_ui: Control = $UI/ShopUI
+@onready var game_over_screen: Control = %GameOver
+@onready var pause_menu: Control = $UI/PauseMenu
 
 # --- Spawner Management ---
 @onready var spawners: Array[Node] = [$spawner,$spawner2]
@@ -58,10 +72,15 @@ var player: Node2D = null
 var current_store: StaticBody2D = null
 
 # --- Settings ---
-@export var starting_currency: int = 100
+@export var starting_currency: int = 0
 @export var debug_mode: bool = false
 
+# --- Enemy Wave Unlocks ---
+@export var special_enemy_unlock_wave: int = 5  # Wave when special enemy starts spawning
+var special_enemy_unlocked: bool = false
+
 # --- UI Hover Detection ---
+signal inventory_updated
 signal ui_hover_changed(is_hovered: bool)
 var is_ui_hovered: bool = false
 
@@ -72,6 +91,9 @@ func _ready():
 	total_kills = 0
 	game_time = 0.0
 	current_state = GameState.PREPARATION
+	main_ui.play("label_intro")
+	#inventory Initialization
+	inventory.resize(30)
 	
 	# Initialize wave system
 	current_wave = 0
@@ -171,6 +193,20 @@ func start_next_wave():
 	wave_timer = wave_duration
 	cleanup_timer = 0.0
 	
+	# Check if we should unlock special enemy
+	check_enemy_unlocks()
+	
+	# Check if this is a boss wave
+	if is_boss_wave():
+		show_notification("BOSS WAVE " + str(current_wave) + " INCOMING! BEWARE!", 8.0)
+		# You could also play a special sound effect here
+	else:
+		# Show special notification for new enemy types
+		if current_wave == special_enemy_unlock_wave:
+			show_notification("Wave " + str(current_wave) + " - New Enemy Type Incoming!")
+		else:
+			show_notification("Wave " + str(current_wave) + " Incoming!")
+	
 	# Increase difficulty for this wave
 	increase_difficulty()
 	
@@ -179,16 +215,24 @@ func start_next_wave():
 	for store in get_tree().get_nodes_in_group("store"):
 		if store and is_instance_valid(store) and store.has_method("play_closing_animation"):
 			store.play_closing_animation()
-	show_notification("Wave " + str(current_wave) + " Incoming!")
+
+func check_enemy_unlocks():
+	# Unlock special enemy at wave 5
+	if current_wave >= special_enemy_unlock_wave and !special_enemy_unlocked:
+		special_enemy_unlocked = true
+		# Notify all spawners about the unlocked enemy
+		for spawner in spawners:
+			if spawner and is_instance_valid(spawner) and spawner.has_method("unlock_special_enemy"):
+				spawner.unlock_special_enemy()
 
 func start_wave_cleanup():
+	var remaining_enemies = get_remaining_enemies()
 	current_state = GameState.WAVE_CLEANUP
-	cleanup_timer = cleanup_duration
+	cleanup_timer = cleanup_duration * remaining_enemies
 	
 	# Disable spawners immediately when cleanup starts
 	set_spawners_active(false)
 	
-	var remaining_enemies = get_remaining_enemies()
 	if remaining_enemies > 0:
 		show_notification("Wave Complete! Finish off " + str(remaining_enemies) + " remaining enemies!")
 	else:
@@ -228,6 +272,9 @@ func clear_remaining_enemies():
 	for enemy in enemies:
 		if is_instance_valid(enemy):
 			enemy.queue_free()
+
+func is_boss_wave() -> bool:
+	return current_wave % 10 == 0
 
 func increase_difficulty():
 	# Increase difficulty for all spawners
@@ -274,6 +321,91 @@ func set_spawners_active(active: bool):
 				spawner.set_active(active)
 			elif spawner.has_method("set_spawning_active"):
 				spawner.set_spawning_active(active)
+#endregion
+
+#region Inventory System
+func add_item(item):
+	for i in range(inventory.size()):
+		if inventory[i] != null and inventory[i]["type"] == item["type"] and inventory[i]["effect"] == item["effect"]:
+			inventory[i]["qauntity"] += item["quantity"]
+			inventory_updated.emit()
+			print("item adde:", item)
+			return true
+		elif inventory[i] == null:
+			inventory[i] = item
+			inventory_updated.emit()
+			print("item adde:", item)
+			return true
+		return false
+
+func remove_item(_item):
+	inventory_updated.emit()
+
+func increase_inventory_size():
+	inventory_updated.emit()
+
+# NEW: Populate sell list with player weapons
+# In Game Manager, update the populate_sell_list method:
+func populate_sell_list():
+	if not player:
+		return
+	
+	# Clear the sell list
+	if sell_list:
+		sell_list.clear()
+	
+	# Populate with player's weapons
+	for i in range(player.get_weapon_count()):
+		var weapon = player.get_weapon_at_index(i)
+		if weapon:
+			var weapon_name = weapon.name
+			# Use the weapon_name property if it exists
+			if "weapon_name" in weapon:
+				weapon_name = weapon.weapon_name
+			
+			var sell_price = 0
+			# Calculate sell price based on weapon properties
+			if weapon.has_method("get_price"):
+				sell_price = int(weapon.get_price() * 0.7)  # 70% of original price
+			elif "price" in weapon:
+				sell_price = int(weapon.price * 0.7)
+			else:
+				# Default sell prices based on weapon type
+				match weapon_name:
+					"Revolver":
+						sell_price = 210  # 70% of 300
+					"M4A1 AR":
+						sell_price = 350  # 70% of 500
+					"AK-47":
+						sell_price = 434  # 70% of 620
+					_:
+						sell_price = 100  # Default fallback
+			
+			var display_text = "%s - $%d" % [weapon_name, sell_price]
+			var icon = get_weapon_icon(weapon_name)  # Get icon for weapon
+			sell_list.add_item(display_text, icon)
+
+# Add this helper method to get weapon icons:
+func get_weapon_icon(weapon_name: String) -> Texture2D:
+	match weapon_name:
+		"M4A1 AR":
+			return load("res://assets/weapons/M4A1/M4A1-icon.png")
+		"AK-47":
+			return load("res://assets/weapons/AK-47/ak_47.png")
+		"Revolver":
+			return load("res://assets/weapons/Revolver/revolver-icon.png")
+		_:
+			return null  # Return null if no icon found
+
+# Helper method to populate item lists
+func populate_item_list(item_list: ItemList, guns: Array[Dictionary]) -> void:
+	if not item_list:
+		return
+	
+	item_list.clear()
+	for gun_data in guns:
+		var display_text = "%s - $%d" % [gun_data["name"], gun_data["price"]]
+		item_list.add_item(display_text)
 #endregion
 
 #region UI Management
@@ -371,18 +503,21 @@ func restart_game():
 func pause_game():
 	if current_state != GameState.GAME_OVER and current_state != GameState.PAUSED:
 		current_state = GameState.PAUSED
-		
+		main_ui.play_backwards("label_intro")
 		# Show pause menu
 		if pause_menu:
 			pause_menu.visible = true
-		
+			pause_ui.play("pause_menu")
 		# Set process mode for game elements to disabled
 		set_game_elements_process(false)
 
 func resume_game():
 	if current_state == GameState.PAUSED:
 		# Hide pause menu
+		main_ui.play("label_intro")
 		if pause_menu:
+			pause_ui.play_backwards("pause_menu")
+			await pause_ui.animation_finished
 			pause_menu.visible = false
 		
 		# Restore process mode for game elements
@@ -439,23 +574,48 @@ func is_store_available() -> bool:
 	return current_state == GameState.PREPARATION
 #endregion
 
-#region Store UI Management - Simplified
+#region Store UI Management
 func open_store_ui(store: StaticBody2D) -> void:
 	if not is_store_available():
 		return
 	
 	current_store = store
 	if shop_ui:
-		animation_player.play("store_ui_open")
+		store_ui.play("open")
+		setup_store_ui_signals(store)
+		store.populate_store_ui()  # Ensure UI is populated when opened
 
 func close_store_ui() -> void:
 	current_store = null
 	if shop_ui:
-		animation_player.play("store_ui_close")
+		store_ui.play_backwards("open")
 
-func update_store_ui() -> void:
-	# This will be handled by your custom store UI implementation
-	pass
+func setup_store_ui_signals(store: StaticBody2D):
+	if not store:
+		return
+	
+	# Connect buy/sell buttons
+	if buy_button:
+		if buy_button.pressed.is_connected(store._on_buy_button_pressed):
+			buy_button.pressed.disconnect(store._on_buy_button_pressed)
+		buy_button.pressed.connect(store._on_buy_button_pressed)
+	
+	if sell_button:
+		if sell_button.pressed.is_connected(store._on_sell_button_pressed):
+			sell_button.pressed.disconnect(store._on_sell_button_pressed)
+		sell_button.pressed.connect(store._on_sell_button_pressed)
+	
+	# Connect single buy list selection
+	if buy_list:
+		if buy_list.item_selected.is_connected(store._on_gun_selected):
+			buy_list.item_selected.disconnect(store._on_gun_selected)
+		buy_list.item_selected.connect(store._on_gun_selected)
+	
+	# Connect sell list selection
+	if sell_list:
+		if sell_list.item_selected.is_connected(store._on_sell_item_selected):
+			sell_list.item_selected.disconnect(store._on_sell_item_selected)
+		sell_list.item_selected.connect(store._on_sell_item_selected)
 #endregion
 
 #region UI Hover Detection

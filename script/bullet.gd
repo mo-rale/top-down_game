@@ -26,7 +26,7 @@ func set_critical(critical: bool) -> void:
 		# Change to red color for critical hits
 		sprite.modulate = Color(1.868, 0.001, 1.511, 1.0)  # Bright red
 		# Optional: Add a glow effect or scale for critical hits
-		sprite.scale = Vector2(0.379, 0.5)  # Slightly larger for crits
+		sprite.scale = Vector2(0.5,0.5)  # Slightly larger for crits
 	else:
 		# Reset to normal color
 		if sprite:
@@ -37,13 +37,13 @@ func set_critical(critical: bool) -> void:
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.has_method("take_damage"):
+
 		body.take_damage(damage, velocity)
 		queue_free()
 
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	var parent = area.get_parent()
-	print("naigo sa aread")
 	if parent.has_method("take_damage"):
 		parent.take_damage(damage, velocity)
 		queue_free()

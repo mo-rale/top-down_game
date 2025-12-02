@@ -4,7 +4,7 @@ extends Node2D
 const Bullet = preload("res://scene/bullet.tscn")
 
 # --- Weapon Stats ---
-@export var weapon_name: String = "Base Weapon"
+var weapon_name: String = "Base Weapon"
 @export var fire_rate: float = 0.5
 @export var damage: int = 40
 @export var magazine_size: int = 10
@@ -253,7 +253,7 @@ func on_dropped() -> void:
 func on_player_entered_detection() -> void:
 	if not is_equipped and not is_player_nearby:
 		is_player_nearby = true
-		modulate = Color(1.2, 1.2, 1.0, 0.9)
+		modulate = Color(0.15, 1.191, 0.0, 0.902)
 func on_player_exited_detection() -> void:
 	if not is_equipped and is_player_nearby:
 		is_player_nearby = false

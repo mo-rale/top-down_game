@@ -5,15 +5,15 @@ extends EnemyBase
 
 func _ready():
 	# Set basic enemy stats
-	speed = 100
-	health = 100
+	speed = 200
+	health = 90
 	max_health = 600
 	enemy_damage = 5
-	damage_interval = 0.5
+	damage_interval = 1
 	knockback_strength = 200.0
 	
-	min_currency_reward = 10
-	max_currency_reward = 25
+	min_currency_reward = 25
+	max_currency_reward = 40
 	
 	# Initialize the base class
 	super._ready()

@@ -1,3 +1,4 @@
+class_name Player
 extends CharacterBody2D
 
 # --- Signals ---
@@ -38,8 +39,10 @@ var can_shoot: bool = true
 @onready var hand: Node2D = $hand
 @onready var default_gun: Node2D = $hand/Revolver
 @onready var pick_area: Area2D = $pick_area
-@onready var bash_area: Area2D = $bash_area
+@onready var bash_area: Area2D = $hand/bash_area
+@onready var shadow: AnimatedSprite2D = $shadow
 @onready var anim: AnimationPlayer = $AnimationPlayer
+
 
 # --- Pickup Variables ---
 var nearby_weapons: Array[Node2D] = []
@@ -49,7 +52,6 @@ var closest_weapon: Node2D = null
 func _ready():
 	max_health = stats["HEALTH"]
 	health_bar.value = max_health
-	
 	add_weapon(default_gun)
 	current_weapon_index = 0
 	
@@ -92,6 +94,7 @@ func _physics_process(delta):
 
 	var facing_left = mouse_pos.x < global_position.x
 	sprite.flip_h = facing_left
+	shadow.flip_h = facing_left
 	hand.scale.y = -1 if facing_left else 1
 
 	if velocity.length() > 10:
@@ -236,24 +239,18 @@ func drop_weapon(index: int) -> void:
 		return
 	
 	var dropped_weapon = inventory[index]
-	inventory.remove_at(index)
 	
-	hand.remove_child(dropped_weapon)
-	get_parent().add_child(dropped_weapon)
-	dropped_weapon.global_position = global_position + Vector2(50, 0).rotated(rotation)
-	
-	enable_weapon_pickup(dropped_weapon)
-	
-	if dropped_weapon.has_method("on_dropped"):
-		dropped_weapon.on_dropped()
-	
-	schedule_weapon_cleanup(dropped_weapon)
-	
-	if current_weapon_index >= inventory.size():
-		current_weapon_index = max(inventory.size() - 1, 0)
-	
-	update_equipped_weapon()
-	weapons_updated.emit()
+	# Use the new remove_weapon method
+	if remove_weapon(index):
+		get_parent().add_child(dropped_weapon)
+		dropped_weapon.global_position = global_position + Vector2(50, 0).rotated(rotation)
+		
+		enable_weapon_pickup(dropped_weapon)
+		
+		if dropped_weapon.has_method("on_dropped"):
+			dropped_weapon.on_dropped()
+		
+		schedule_weapon_cleanup(dropped_weapon)
 
 func schedule_weapon_cleanup(weapon: Node2D) -> void:
 	var cleanup_timer = Timer.new()
@@ -279,6 +276,29 @@ func enable_weapon_pickup(weapon: Node2D):
 	for child in weapon.get_children():
 		if child is CollisionShape2D or child is CollisionPolygon2D or child is Area2D:
 			child.set_deferred("disabled", false)
+
+func remove_weapon(index: int) -> bool:
+	if index < 0 or index >= inventory.size():
+		return false
+	
+	if inventory[index] == default_gun:
+		return false  # Can't remove default weapon
+	
+	var removed_weapon = inventory[index]
+	inventory.remove_at(index)
+	
+	# Remove from hand
+	hand.remove_child(removed_weapon)
+	
+	# Update current weapon index if needed
+	if current_weapon_index >= inventory.size():
+		current_weapon_index = max(inventory.size() - 1, 0)
+	
+	# Update equipped weapon
+	update_equipped_weapon()
+	weapons_updated.emit()
+	
+	return true
 #endregion
 
 #region Pickup System
@@ -429,7 +449,11 @@ func get_current_weapon_name() -> String:
 		return "None"
 	
 	var current_weapon = inventory[current_weapon_index]
-	return current_weapon.name
+	# Use the weapon_name property if it exists, otherwise fall back to node name
+	if "weapon_name" in current_weapon:
+		return current_weapon.weapon_name
+	else:
+		return current_weapon.name
 
 func get_weapon_at_index(index: int) -> Node2D:
 	if index >= 0 and index < inventory.size():

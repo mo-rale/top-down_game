@@ -2,8 +2,35 @@ extends StaticBody2D
 
 # --- Store Settings ---
 @export var store_name: String = "Gun Store"
-@export var guns_for_sale: Array[PackedScene] = []
 @export var sell_multiplier: float = 0.7
+
+# All available guns in one array
+var available_guns: Array[Dictionary] = [
+	{
+		"name": "M4A1 AR", 
+		"price": 500, 
+		"damage": 25, 
+		"fire_rate": 0.20, 
+		"scene_path": "res://scene/weapons/m_4a_1.tscn",
+		"icon_path": "res://assets/weapons/M4A1/M4A1-icon.png"  # Add this
+	},
+	{
+		"name": "AK-47", 
+		"price": 620, 
+		"damage": 30, 
+		"fire_rate": 0.15, 
+		"scene_path": "res://scene/weapons/ak_47.tscn",
+		"icon_path": "res://assets/weapons/AK-47/ak_47.png"  # Add this
+	},
+	{
+		"name": "Revolver", 
+		"price": 300, 
+		"damage": 50, 
+		"fire_rate": 0.8, 
+		"scene_path": "res://scene/weapons/revolver.tscn",
+		"icon_path": "res://assets/weapons/Revolver/revolver-icon.png"  # Add this
+	}
+]
 
 # Node References
 @onready var highlight_area: Area2D = $buying_area
@@ -11,20 +38,20 @@ extends StaticBody2D
 @onready var sprite: AnimatedSprite2D = $Sprite2D
 @onready var opening: AudioStreamPlayer2D = $opening
 @onready var closing: AudioStreamPlayer2D = $closing
-
+@onready var light_1: PointLight2D = $light1
+@onready var light_2: PointLight2D = $light2
 
 # State Variables
 var is_player_nearby: bool = false
 var player: CharacterBody2D = null
-var gun_data_cache: Dictionary = {}
+var selected_gun_data: Dictionary = {}
+var selected_weapon_index: int = -1
 
 
 func _ready() -> void:
 	add_to_group("store")
 	highlight_area.connect("body_entered", Callable(self, "_on_highlight_area_body_entered"))
 	highlight_area.connect("body_exited", Callable(self, "_on_highlight_area_body_exited"))
-	
-	cache_gun_data()
 
 func _process(_delta: float) -> void:
 	update_store_availability()
@@ -40,12 +67,17 @@ func update_store_availability() -> void:
 		
 		if sprite:
 			if is_store_available:
+				light_1.enabled = true
+				light_2.enabled = true
 				sprite.modulate = Color(1, 1, 1)
 			else:
-				sprite.modulate = Color(1, 1, 1)
-		
+				sprite.modulate = Color(0.5, 0.5, 0.5)
+				light_1.enabled = false
+				light_2.enabled = false
 		if not is_store_available and is_player_nearby:
 			close_shop()
+			light_1.enabled = false
+			light_2.enabled = false
 			show_store_notification("Store closed - Wave incoming!", false)
 
 func is_store_open() -> bool:
@@ -67,10 +99,13 @@ func open_shop() -> void:
 	var game_manager = get_tree().get_first_node_in_group("game_manager")
 	if game_manager and game_manager.has_method("open_store_ui"):
 		game_manager.open_store_ui(self)
+		populate_store_ui()
+
 func close_shop() -> void:
 	var game_manager = get_tree().get_first_node_in_group("game_manager")
 	if game_manager and game_manager.has_method("close_store_ui"):
 		game_manager.close_store_ui()
+
 func highlight_store(should_highlight: bool) -> void:
 	if not sprite or not is_store_open():
 		return
@@ -113,36 +148,44 @@ func _on_highlight_area_body_exited(body: Node2D) -> void:
 
 func _on_player_weapons_updated() -> void:
 	if is_player_nearby and is_store_open():
-		var game_manager = get_tree().get_first_node_in_group("game_manager")
-		if game_manager and game_manager.has_method("update_store_ui"):
-			game_manager.update_store_ui()
+		populate_store_ui()
 
-func _on_buy_button_pressed(gun_index: int) -> void:
+# Store UI button handlers
+func _on_buy_button_pressed() -> void:
 	if not is_store_open():
 		show_store_notification("Cannot buy during active wave!", false)
 		return
 	
-	if gun_index < 0 or gun_index >= guns_for_sale.size():
+	if selected_gun_data.is_empty():
+		show_purchase_notification("❌ Please select a weapon to buy", false)
 		return
 	
-	var gun_scene = guns_for_sale[gun_index]
-	var price = get_gun_price(gun_scene)
-	var gun_name = get_gun_name(gun_scene)
+	var price = selected_gun_data.get("price", 0)
+	var gun_name = selected_gun_data.get("name", "Unknown")
+	
+	print("=== BUY ATTEMPT ===")
+	print("Trying to buy: ", gun_name)
+	print("Price: $", price)
+	
+	if player_has_weapon(gun_name):
+		show_purchase_notification("❌ You already own " + gun_name, false)
+		return
 	
 	if player_has_enough_money(price):
 		if deduct_player_money(price):
-			give_gun_to_player(gun_scene)
+			give_gun_to_player(selected_gun_data)
 			show_purchase_notification("✅ Purchased " + gun_name + " for $" + str(price), true)
 			_on_player_weapons_updated()
 	else:
 		show_purchase_notification("❌ Not enough money for " + gun_name, false)
 
-func _on_sell_button_pressed(weapon_index: int, sell_price: int) -> void:
+func _on_sell_button_pressed() -> void:
 	if not is_store_open():
 		show_store_notification("Cannot sell during active wave!", false)
 		return
 	
-	if not player:
+	if not player or selected_weapon_index == -1:
+		show_purchase_notification("❌ Please select a weapon to sell", false)
 		return
 	
 	if player.has_method("get_weapon_count"):
@@ -151,16 +194,47 @@ func _on_sell_button_pressed(weapon_index: int, sell_price: int) -> void:
 			show_purchase_notification("❌ Need at least 2 weapons to sell", false)
 			return
 	
-	var weapon_to_sell = get_player_weapon_at_index(weapon_index)
+	var weapon_to_sell = get_player_weapon_at_index(selected_weapon_index)
 	if not weapon_to_sell:
+		show_purchase_notification("❌ Invalid weapon selection", false)
 		return
 	
-	var weapon_name = weapon_to_sell.name
+	var weapon_name = get_weapon_display_name(weapon_to_sell)
+	var sell_price = calculate_sell_price(weapon_to_sell)
 	
-	if sell_player_weapon(weapon_index):
+	if sell_player_weapon(selected_weapon_index):
 		add_player_money(sell_price)
 		show_purchase_notification("💰 Sold " + weapon_name + " for $" + str(sell_price), true)
+		
+		# Reset selection and update UI
+		selected_weapon_index = -1
+		
+		# Update the sell list after selling
+		var game_manager = get_tree().get_first_node_in_group("game_manager")
+		if game_manager:
+			game_manager.populate_sell_list()
+		
 		_on_player_weapons_updated()
+
+# NEW: Simplified gun selection from single list
+func _on_gun_selected(index: int) -> void:
+	if index >= 0 and index < available_guns.size():
+		selected_gun_data = available_guns[index]
+		selected_weapon_index = -1  # Clear weapon selection when gun is selected
+		print("Selected gun: ", selected_gun_data["name"])
+	else:
+		selected_gun_data = {}
+
+# Sell list selection
+func _on_sell_item_selected(index: int) -> void:
+	selected_weapon_index = index
+	selected_gun_data = {}  # Clear gun selection when weapon is selected
+	
+	var weapon = get_player_weapon_at_index(index)
+	if weapon:
+		var weapon_name = get_weapon_display_name(weapon)
+		var sell_price = calculate_sell_price(weapon)
+		print("Selected weapon for selling: ", weapon_name, " - $", sell_price)
 #endregion
 
 #region Data Getters
@@ -169,33 +243,11 @@ func get_player_weapon_at_index(index: int) -> Node2D:
 		return player.get_weapon_at_index(index)
 	return null
 
-func get_gun_price(gun_scene: PackedScene) -> int:
-	if gun_scene in gun_data_cache:
-		return gun_data_cache[gun_scene].price
-	
-	var gun_instance = gun_scene.instantiate()
-	var price = 100
-	
-	if gun_instance.has_method("get_price"):
-		price = gun_instance.get_price()
-	elif gun_instance.has_property("price"):
-		price = gun_instance.price
-	
-	gun_instance.queue_free()
-	return price
+func get_gun_price(gun_data: Dictionary) -> int:
+	return gun_data.get("price", 100)
 
-func get_gun_name(gun_scene: PackedScene) -> String:
-	if gun_scene in gun_data_cache:
-		return gun_data_cache[gun_scene].name
-	
-	var gun_instance = gun_scene.instantiate()
-	var gun_name = "Unknown Gun"
-	
-	if gun_instance:
-		gun_name = gun_instance.name
-		gun_instance.queue_free()
-	
-	return gun_name
+func get_gun_name(gun_data: Dictionary) -> String:
+	return gun_data.get("name", "Unknown Gun")
 
 func calculate_sell_price(weapon: Node2D) -> int:
 	if weapon and weapon.has_method("get_price"):
@@ -206,30 +258,66 @@ func calculate_sell_price(weapon: Node2D) -> int:
 		return int(original_price * sell_multiplier)
 	return 50
 
-func get_guns_for_sale() -> Array[PackedScene]:
-	return guns_for_sale
+func get_available_guns() -> Array[Dictionary]:
+	return available_guns
 
 func get_player() -> CharacterBody2D:
 	return player
+
+func player_has_weapon(weapon_name: String) -> bool:
+	if not player:
+		return false
+	
+	for i in range(player.get_weapon_count()):
+		var weapon = player.get_weapon_at_index(i)
+		if weapon:
+			var current_weapon_name = get_weapon_display_name(weapon)
+			if current_weapon_name == weapon_name:
+				return true
+	return false
+
+func get_weapon_display_name(weapon: Node2D) -> String:
+	if not weapon:
+		return "Unknown"
+	
+	# Use the weapon_name property if it exists
+	if "weapon_name" in weapon:
+		return weapon.weapon_name
+	
+	# Otherwise use the node name and clean it up
+	var node_name = weapon.name
+	node_name = node_name.replace("@", "").replace(".remap", "").replace(".tscn", "")
+	return node_name
+
+func get_current_currency() -> int:
+	var game_manager = get_tree().get_first_node_in_group("game_manager")
+	if game_manager and game_manager.has_method("get_current_currency"):
+		return game_manager.get_current_currency()
+	return 0
 #endregion
 
 #region Shop Transactions
 func sell_player_weapon(weapon_index: int) -> bool:
-	if player and player.has_method("drop_weapon"):
-		player.drop_weapon(weapon_index)
-		return true
+	if player and player.has_method("remove_weapon"):
+		return player.remove_weapon(weapon_index)
 	return false
 
-func give_gun_to_player(gun_scene: PackedScene) -> void:
+func give_gun_to_player(gun_data: Dictionary) -> void:
 	if not player:
 		return
 	
-	var gun_instance = gun_scene.instantiate()
+	var gun_scene_path = gun_data.get("scene_path", "")
+	if gun_scene_path == "":
+		return
 	
-	if player.has_method("collect_weapon"):
-		player.collect_weapon(gun_instance)
-	else:
-		gun_instance.queue_free()
+	var gun_scene = load(gun_scene_path)
+	if gun_scene:
+		var gun_instance = gun_scene.instantiate()
+		
+		if player.has_method("collect_weapon"):
+			player.collect_weapon(gun_instance)
+		else:
+			gun_instance.queue_free()
 
 func add_player_money(amount: int) -> void:
 	var game_manager = get_tree().get_first_node_in_group("game_manager")
@@ -255,22 +343,31 @@ func show_purchase_notification(message: String, _is_success: bool) -> void:
 	if game_manager and game_manager.has_method("show_notification"):
 		game_manager.show_notification(message, 3.0)
 
-func cache_gun_data() -> void:
-	for gun_scene in guns_for_sale:
-		if gun_scene:
-			var gun_instance = gun_scene.instantiate()
-			var gun_data = {
-				"name": gun_instance.name,
-				"price": 100
-			}
+# In Store script, update the populate_store_ui method:
+func populate_store_ui() -> void:
+	var game_manager = get_tree().get_first_node_in_group("game_manager")
+	if not game_manager:
+		return
+
+	# Populate buy list with all available guns and icons
+	if game_manager.buy_list:
+		game_manager.buy_list.clear()
+		for gun_data in available_guns:
+			var display_text = "%s - $%d" % [gun_data["name"], gun_data["price"]]
+			var icon = null
 			
-			if gun_instance.has_method("get_price"):
-				gun_data["price"] = gun_instance.get_price()
-			elif gun_instance.has_property("price"):
-				gun_data["price"] = gun_instance.price
+			# Load icon if path is provided
+			if "icon_path" in gun_data and gun_data["icon_path"] != "":
+				icon = load(gun_data["icon_path"])
+			else:
+				# Fallback to the helper method
+				icon = game_manager.get_weapon_icon(gun_data["name"])
 			
-			gun_data_cache[gun_scene] = gun_data
-			gun_instance.queue_free()
+			game_manager.buy_list.add_item(display_text, icon)
+		print("Populated buy list with ", available_guns.size(), " weapons")
+	
+	# Populate sell list with player weapons
+	game_manager.populate_sell_list()
 #endregion
 
 #region Store Animation Control
