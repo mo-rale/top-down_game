@@ -1,0 +1,72 @@
+[gd_scene load_steps=10 format=3 uid="uid://10gjdamn17ht"]
+
+[ext_resource type="Script" uid="uid://dxkjloedgh0xw" path="res://script/weapons/ak_47.gd" id="1_ec5d4"]
+[ext_resource type="Texture2D" uid="uid://dqa8db15v1yhl" path="res://assets/weapons/AK-47/ak_47.png" id="2_3ubc0"]
+[ext_resource type="AudioStream" uid="uid://e43uro7iwqso" path="res://assets/sfx/guns/ak47_firing.mp3" id="3_h4go8"]
+[ext_resource type="AudioStream" uid="uid://bpf6ox1fytixu" path="res://assets/sfx/guns/m4a1-or-m16-reload-sound-84436.ogg" id="4_57rpx"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h4go8"]
+atlas = ExtResource("2_3ubc0")
+region = Rect2(0, 0, 70, 28)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_57rpx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h4go8")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3ubc0"]
+radius = 62.22633
+
+[sub_resource type="Gradient" id="Gradient_ct4mp"]
+offsets = PackedFloat32Array(0.033333335, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_57rpx"]
+gradient = SubResource("Gradient_ct4mp")
+fill = 1
+fill_to = Vector2(0.6869159, 0.8785047)
+
+[node name="Ak_47" type="Node2D" groups=["weapon_pickup"]]
+script = ExtResource("1_ec5d4")
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(22.701185, 3.1149635)
+scale = Vector2(0.7646924, 0.7646924)
+sprite_frames = SubResource("SpriteFrames_57rpx")
+animation = &"idle"
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(70, -2)
+scale = Vector2(0.7646924, 0.7646924)
+
+[node name="shooting" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(-2, 2)
+stream = ExtResource("3_h4go8")
+volume_db = -7.03
+
+[node name="reloading" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_57rpx")
+
+[node name="pickable_area" type="Area2D" parent="." groups=["weapon_pickup"]]
+collision_layer = 4
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="pickable_area"]
+position = Vector2(21, 1)
+scale = Vector2(0.33786014, 0.33786014)
+shape = SubResource("CircleShape2D_3ubc0")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(147.00002, 4.999999)
+rotation = -0.7481634
+scale = Vector2(0.99999994, 0.99999994)
+color = Color(1, 1, 0.26666668, 1)
+shadow_enabled = true
+texture = SubResource("GradientTexture2D_57rpx")
+texture_scale = 2.46
