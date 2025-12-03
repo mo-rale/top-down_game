@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b6qj7nr8xosf"
+path="res://.godot/imported/Kevin MacLeod_ Local Forecast - Elevator.mp3-e8d9f796b378ce78c4fda7bbf3e5aeb7.mp3str"
+
+[deps]
+
+source_file="res://assets/sfx/music/Kevin MacLeod_ Local Forecast - Elevator.mp3"
+dest_files=["res://.godot/imported/Kevin MacLeod_ Local Forecast - Elevator.mp3-e8d9f796b378ce78c4fda7bbf3e5aeb7.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
