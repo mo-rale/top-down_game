@@ -1,0 +1,89 @@
+[gd_scene load_steps=11 format=3 uid="uid://b5rchryca43uy"]
+
+[ext_resource type="Script" uid="uid://it3in1wq8k4" path="res://script/weapons/rocket_launcher.gd" id="1_ax1el"]
+[ext_resource type="AudioStream" uid="uid://bpf6ox1fytixu" path="res://assets/sfx/guns/m4a1-or-m16-reload-sound-84436.ogg" id="1_so8re"]
+[ext_resource type="Texture2D" uid="uid://dw0ntnnk4bd23" path="res://assets/weapons/Rocket_Launcher/rocket_launcher.png" id="2_k6hww"]
+[ext_resource type="AudioStream" uid="uid://c5evlvvr40c74" path="res://assets/sfx/guns/M4A1 [SINGLE SHOT] Sound Effect (mp3cut.net).ogg" id="2_xxde0"]
+[ext_resource type="PackedScene" uid="uid://uep6vf6jui3l" path="res://scene/rock_proj.tscn" id="2_yd1fr"]
+[ext_resource type="Texture2D" uid="uid://du35d5rcix071" path="res://assets/weapons/Rocket_Launcher/rocket_trail.png" id="5_k6hww"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yd1fr"]
+atlas = ExtResource("2_k6hww")
+region = Rect2(0, 0, 56, 26)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vwpsn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yd1fr")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ax1el"]
+radius = 21.095022
+
+[sub_resource type="Gradient" id="Gradient_yd1fr"]
+offsets = PackedFloat32Array(0.60273975, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[node name="rocket_launcher" type="Node2D"]
+script = ExtResource("1_ax1el")
+projectile_scene = ExtResource("2_yd1fr")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(25.846153, 2.5)
+scale = Vector2(1.4230769, 1.4230769)
+sprite_frames = SubResource("SpriteFrames_vwpsn")
+animation = &"idle"
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(56.846153, -2.5000014)
+scale = Vector2(0.8418924, 0.8418924)
+
+[node name="reloading" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(4, 5)
+stream = ExtResource("1_so8re")
+volume_db = -0.109
+
+[node name="shooting" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(4, 5)
+stream = ExtResource("2_xxde0")
+volume_db = -1.981
+
+[node name="Explosion" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(23, 0)
+
+[node name="pickable_area" type="Area2D" parent="." groups=["weapon_pickup"]]
+position = Vector2(4, 5)
+collision_layer = 4
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="pickable_area"]
+position = Vector2(18, 4)
+shape = SubResource("CircleShape2D_ax1el")
+debug_color = Color(0.8982647, 0.31529412, 0, 0.41960785)
+
+[node name="LaunchFlash" type="CPUParticles2D" parent="."]
+position = Vector2(57.999996, -2)
+rotation = 3.0209684
+emitting = false
+amount = 20
+texture = ExtResource("5_k6hww")
+lifetime = 0.8
+explosiveness = 1.0
+randomness = 0.25
+emission_shape = 1
+emission_sphere_radius = 18.15
+spread = 56.13
+gravity = Vector2(0, 0)
+initial_velocity_min = 20.62
+initial_velocity_max = 61.86
+angular_velocity_min = -371.13
+angular_velocity_max = 118.77
+radial_accel_min = 28.47
+radial_accel_max = 28.47
+color = Color(1, 1, 0.6392157, 0.5137255)
+color_ramp = SubResource("Gradient_yd1fr")

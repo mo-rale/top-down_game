@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=4 uid="uid://istk1kbeacdb"]
+[gd_scene load_steps=50 format=4 uid="uid://istk1kbeacdb"]
 
 [ext_resource type="Script" uid="uid://chgovofepf0ua" path="res://script/main.gd" id="1_brvut"]
 [ext_resource type="Texture2D" uid="uid://xf05xycrmwe0" path="res://assets/tiles/Tilemap/10.png" id="2_k65ib"]
@@ -10,7 +10,9 @@
 [ext_resource type="Texture2D" uid="uid://dk5vntelpu6cw" path="res://assets/ui/ui-panel.png" id="6_of57s"]
 [ext_resource type="FontFile" uid="uid://blpbi0aud4wru" path="res://assets/fonts/Jersey10-Regular.ttf" id="6_p1hux"]
 [ext_resource type="AudioStream" uid="uid://bg4yldj88yupb" path="res://assets/sfx/ambient.ogg" id="7_of57s"]
+[ext_resource type="PackedScene" uid="uid://b5rchryca43uy" path="res://scene/weapons/rocket_launcher.tscn" id="10_wscrc"]
 [ext_resource type="PackedScene" uid="uid://10gjdamn17ht" path="res://scene/weapons/ak_47.tscn" id="11_k65ib"]
+[ext_resource type="AudioStream" uid="uid://p6iogfl7mgk4" path="res://assets/sfx/zombie/zombie-screaming-207590.mp3" id="13_mswub"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_tqoya"]
 normal = Vector2(0, 1)
@@ -24,7 +26,7 @@ normal = Vector2(-0.9701425, -0.24253562)
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_mswub"]
 normal = Vector2(1, 0)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wscrc"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_v2gmf"]
 texture = ExtResource("2_tqoya")
 0:0/0 = 0
 1:0/0 = 0
@@ -162,7 +164,7 @@ texture = ExtResource("2_tqoya")
 1:11/0 = 0
 1:12/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mswub"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jcbur"]
 texture = ExtResource("4_wscrc")
 0:0/0 = 0
 1:0/0 = 0
@@ -1202,8 +1204,8 @@ texture = ExtResource("4_wscrc")
 36:27/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_mswub"]
-sources/0 = SubResource("TileSetAtlasSource_wscrc")
-sources/1 = SubResource("TileSetAtlasSource_mswub")
+sources/0 = SubResource("TileSetAtlasSource_v2gmf")
+sources/1 = SubResource("TileSetAtlasSource_jcbur")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tqoya"]
 texture = ExtResource("2_tqoya")
@@ -2920,29 +2922,29 @@ offset_bottom = 460.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("6_of57s")
-region_rect = Rect2(0, 0, 60, 60)
-patch_margin_left = 12
-patch_margin_top = 12
-patch_margin_right = 12
-patch_margin_bottom = 12
+region_rect = Rect2(0, 0, 40, 40)
+patch_margin_left = 7
+patch_margin_top = 7
+patch_margin_right = 7
+patch_margin_bottom = 7
 
 [node name="retry" type="Button" parent="UI/GameOver/PanelContainer"]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 75.0
-offset_top = 282.5
+offset_top = 245.5
 offset_right = 194.0
-offset_bottom = 311.5
+offset_bottom = 274.5
 size_flags_vertical = 4
 theme = SubResource("Theme_b5f6u")
 text = "RETRY"
 
 [node name="home" type="Button" parent="UI/GameOver/PanelContainer"]
 layout_mode = 0
-offset_left = 74.0
-offset_top = 245.5
-offset_right = 194.0
-offset_bottom = 277.5
+offset_left = 75.0
+offset_top = 205.5
+offset_right = 195.0
+offset_bottom = 237.5
 theme = SubResource("Theme_mswub")
 text = "HOME"
 
@@ -2967,7 +2969,7 @@ offset_bottom = 170.5
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/GameOver/PanelContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="highestKill_label" type="Label" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="totalkills_label" type="Label" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 19
 text = "Total Kills: "
@@ -2975,9 +2977,9 @@ text = "Total Kills: "
 [node name="total_time" type="Label" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 19
-text = "Highest Time:"
+text = "Total Time:"
 
-[node name="moeny_earned" type="Label" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="money_earned" type="Label" parent="UI/GameOver/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 19
 text = "Money Collected:"
@@ -3111,11 +3113,11 @@ offset_bottom = 123.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("6_of57s")
-region_rect = Rect2(0, 0, 60, 61)
-patch_margin_left = 12
-patch_margin_top = 12
-patch_margin_right = 12
-patch_margin_bottom = 13
+region_rect = Rect2(0, 0, 40, 40)
+patch_margin_left = 7
+patch_margin_top = 7
+patch_margin_right = 7
+patch_margin_bottom = 7
 
 [node name="resume" type="Button" parent="UI/PauseMenu/NinePatchRect"]
 layout_mode = 1
@@ -3191,11 +3193,11 @@ tooltip_text = "GUN SHOP"
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
 texture = ExtResource("6_of57s")
-region_rect = Rect2(0, 0, 60, 60)
-patch_margin_left = 12
-patch_margin_top = 12
-patch_margin_right = 12
-patch_margin_bottom = 12
+region_rect = Rect2(0, 0, 40, 40)
+patch_margin_left = 7
+patch_margin_top = 7
+patch_margin_right = 7
+patch_margin_bottom = 7
 axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
 
@@ -3317,3 +3319,11 @@ libraries = {
 
 [node name="Ak_47" parent="." instance=ExtResource("11_k65ib")]
 position = Vector2(256, -16)
+
+[node name="rocket_launcher" parent="." instance=ExtResource("10_wscrc")]
+position = Vector2(256, 56)
+
+[node name="scream" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("13_mswub")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

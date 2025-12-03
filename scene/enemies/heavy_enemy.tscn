@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://ccejbrskd37a"]
+[gd_scene load_steps=34 format=3 uid="uid://ccejbrskd37a"]
 
 [ext_resource type="Script" uid="uid://cl436a65ea3bi" path="res://script/enemies/heavy_enemy.gd" id="1_cdkik"]
 [ext_resource type="Texture2D" uid="uid://ybtfbvfidu1a" path="res://assets/zombies/heavy_zombie.png" id="2_4nsgf"]
@@ -6,7 +6,6 @@
 [ext_resource type="AudioStream" uid="uid://bx06otatevdtf" path="res://assets/sfx/zombie/zombie-dying.mp3" id="4_pafvr"]
 [ext_resource type="AudioStream" uid="uid://61e2v6rdwnn2" path="res://assets/sfx/zombie/zombie-hit.mp3" id="5_rtfca"]
 [ext_resource type="AudioStream" uid="uid://b4llcm36p7vbd" path="res://assets/sfx/zombie/zombie-dialog.mp3" id="6_utjdk"]
-[ext_resource type="Texture2D" uid="uid://cyofl1fdap6se" path="res://assets/blood.png" id="7_4nsgf"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8ncyd"]
 radius = 28.284271
@@ -190,11 +189,6 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_oo4wl"]
 size = Vector2(61.75, 81.75)
 
-[sub_resource type="Curve" id="Curve_qkf0x"]
-_limits = [-360.0, 360.0, 0.0, 1.0]
-_data = [Vector2(0.20930234, 157.75287), 0.0, 0.0, 0, 0, Vector2(0.43023258, 109.21353), -2529.9272, -2529.9272, 0, 0, Vector2(0.7441861, -93.03369), 0.0, -12832.3545, 0, 0]
-point_count = 3
-
 [node name="heavy_enemy" type="CharacterBody2D"]
 collision_layer = 128
 collision_mask = 128
@@ -241,26 +235,3 @@ volume_db = -2.239
 
 [node name="dialogue" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("6_utjdk")
-
-[node name="blood" type="CPUParticles2D" parent="."]
-position = Vector2(-5, -5)
-emitting = false
-amount = 12
-texture = ExtResource("7_4nsgf")
-lifetime = 0.45
-one_shot = true
-explosiveness = 1.0
-randomness = 0.46
-lifetime_randomness = 0.15
-draw_order = 1
-emission_shape = 1
-emission_sphere_radius = 27.39
-particle_flag_align_y = true
-spread = 135.93
-initial_velocity_max = 72.16
-angular_velocity_curve = SubResource("Curve_qkf0x")
-linear_accel_max = 100.0
-radial_accel_max = 100.0
-tangential_accel_max = 100.0
-scale_amount_min = 0.1
-scale_amount_max = 0.2

@@ -1,8 +1,10 @@
-[gd_scene load_steps=26 format=3 uid="uid://v2kd6stvs6ao"]
+[gd_scene load_steps=28 format=3 uid="uid://v2kd6stvs6ao"]
 
 [ext_resource type="Script" uid="uid://dhrhgx4i6t646" path="res://script/store.gd" id="1_tq3ax"]
 [ext_resource type="Texture2D" uid="uid://dkexlneieibmx" path="res://assets/van.png" id="4_mguni"]
 [ext_resource type="AudioStream" uid="uid://bxbunghto4mmp" path="res://assets/sfx/shop/opening-old-garage-door-80337 (mp3cut.net).wav" id="5_3dgim"]
+[ext_resource type="AudioStream" uid="uid://bhct7fjtji0lk" path="res://assets/sfx/shop/cash-register-purchase-87313.mp3" id="5_hli3h"]
+[ext_resource type="AudioStream" uid="uid://c6m6auvbtd8jg" path="res://assets/sfx/shop/cash-register-kaching-sound-effect-125042.mp3" id="6_bu4iv"]
 [ext_resource type="AudioStream" uid="uid://byhxb3mtx6jis" path="res://assets/sfx/shop/closing-old-garage-door-80374 (mp3cut.net).wav" id="6_hli3h"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mguni"]
@@ -199,3 +201,9 @@ position = Vector2(114, -10)
 rotation = 0.78760576
 color = Color(1, 1, 0.15294118, 1)
 texture = SubResource("GradientTexture2D_myxlr")
+
+[node name="buy_aud" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_hli3h")
+
+[node name="sell_aud" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_bu4iv")

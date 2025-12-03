@@ -29,6 +29,14 @@ var available_guns: Array[Dictionary] = [
 		"fire_rate": 0.8, 
 		"scene_path": "res://scene/weapons/revolver.tscn",
 		"icon_path": "res://assets/weapons/Revolver/revolver-icon.png"  # Add this
+	},
+	{
+		"name": "Rocket Launcher", 
+		"price": 2500, 
+		"damage": 120, 
+		"fire_rate": 1.5, 
+		"scene_path": "res://scene/weapons/rocket_launcher.tscn",
+		"icon_path": "res://assets/weapons/Rocket_Launcher/rocket_launcher.png" # Add this
 	}
 ]
 
@@ -40,6 +48,8 @@ var available_guns: Array[Dictionary] = [
 @onready var closing: AudioStreamPlayer2D = $closing
 @onready var light_1: PointLight2D = $light1
 @onready var light_2: PointLight2D = $light2
+@onready var buy_aud: AudioStreamPlayer2D = $buy_aud
+@onready var sell_aud: AudioStreamPlayer2D = $sell_aud
 
 # State Variables
 var is_player_nearby: bool = false
@@ -111,9 +121,10 @@ func highlight_store(should_highlight: bool) -> void:
 		return
 	
 	var existing_tweens = get_tree().get_processed_tweens()
-	for tween in existing_tweens:
-		if tween.is_valid() and tween.get_object() == sprite:
-			tween.kill()
+	if existing_tweens == null:
+		for tween in existing_tweens:
+			if tween.is_valid() and tween.get_object() == sprite:
+				tween.kill()
 	
 	if should_highlight:
 		sprite.modulate = Color(1.3, 1.3, 1.0)
@@ -156,6 +167,13 @@ func _on_buy_button_pressed() -> void:
 		show_store_notification("Cannot buy during active wave!", false)
 		return
 	
+	# CHECK: Player already has maximum weapons (3)
+	if player and player.has_method("get_weapon_count"):
+		var weapon_count = player.get_weapon_count()
+		if weapon_count >= 3:  # Changed from ">" to ">=" to prevent buying when at 3
+			show_purchase_notification("❌ Maximum weapons (3) reached! Sell one first.", false)
+			return
+	
 	if selected_gun_data.is_empty():
 		show_purchase_notification("❌ Please select a weapon to buy", false)
 		return
@@ -166,6 +184,7 @@ func _on_buy_button_pressed() -> void:
 	print("=== BUY ATTEMPT ===")
 	print("Trying to buy: ", gun_name)
 	print("Price: $", price)
+	print("Player has ", player.get_weapon_count() if player else 0, " weapons")
 	
 	if player_has_weapon(gun_name):
 		show_purchase_notification("❌ You already own " + gun_name, false)
@@ -173,6 +192,7 @@ func _on_buy_button_pressed() -> void:
 	
 	if player_has_enough_money(price):
 		if deduct_player_money(price):
+			buy_aud.play()
 			give_gun_to_player(selected_gun_data)
 			show_purchase_notification("✅ Purchased " + gun_name + " for $" + str(price), true)
 			_on_player_weapons_updated()
@@ -203,6 +223,7 @@ func _on_sell_button_pressed() -> void:
 	var sell_price = calculate_sell_price(weapon_to_sell)
 	
 	if sell_player_weapon(selected_weapon_index):
+		sell_aud.play()
 		add_player_money(sell_price)
 		show_purchase_notification("💰 Sold " + weapon_name + " for $" + str(sell_price), true)
 		
@@ -242,6 +263,11 @@ func get_player_weapon_at_index(index: int) -> Node2D:
 	if player and player.has_method("get_weapon_at_index"):
 		return player.get_weapon_at_index(index)
 	return null
+
+func get_player_weapon_count() -> int:
+	if player and player.has_method("get_weapon_count"):
+		return player.get_weapon_count()
+	return 0
 
 func get_gun_price(gun_data: Dictionary) -> int:
 	return gun_data.get("price", 100)
@@ -343,12 +369,23 @@ func show_purchase_notification(message: String, _is_success: bool) -> void:
 	if game_manager and game_manager.has_method("show_notification"):
 		game_manager.show_notification(message, 3.0)
 
+func can_player_buy() -> bool:
+	# Check if player has less than 3 weapons
+	if player and player.has_method("get_weapon_count"):
+		return player.get_weapon_count() < 3
+	return true
+
 # In Store script, update the populate_store_ui method:
 func populate_store_ui() -> void:
 	var game_manager = get_tree().get_first_node_in_group("game_manager")
 	if not game_manager:
 		return
-
+	if player and player.has_method("get_weapon_count"):
+		var current_count = player.get_weapon_count()
+		var max_count = 3
+		
+		if game_manager.has_method("update_weapon_capacity_display"):
+			game_manager.update_weapon_capacity_display(current_count, max_count)
 	# Populate buy list with all available guns and icons
 	if game_manager.buy_list:
 		game_manager.buy_list.clear()
@@ -364,6 +401,17 @@ func populate_store_ui() -> void:
 				icon = game_manager.get_weapon_icon(gun_data["name"])
 			
 			game_manager.buy_list.add_item(display_text, icon)
+		
+		# Disable buy button if player already has 3 weapons
+		if game_manager.buy_button:
+			if player and player.has_method("get_weapon_count"):
+				if player.get_weapon_count() >= 3:
+					game_manager.buy_button.disabled = true
+					game_manager.buy_button.text = "MAX WEAPONS (3)"
+				else:
+					game_manager.buy_button.disabled = false
+					game_manager.buy_button.text = "BUY"
+		
 		print("Populated buy list with ", available_guns.size(), " weapons")
 	
 	# Populate sell list with player weapons

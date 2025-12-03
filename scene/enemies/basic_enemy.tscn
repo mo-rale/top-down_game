@@ -1,12 +1,11 @@
-[gd_scene load_steps=32 format=3 uid="uid://dkqo2egpcrk3o"]
+[gd_scene load_steps=30 format=3 uid="uid://dkqo2egpcrk3o"]
 
 [ext_resource type="Script" uid="uid://civu3esu7cueq" path="res://script/enemies/basic_enemy.gd" id="1_42bns"]
 [ext_resource type="Texture2D" uid="uid://g3g47f4cvu4k" path="res://assets/zombies/basic_zombie.png" id="2_tj5ku"]
 [ext_resource type="AudioStream" uid="uid://kawvddvmm14p" path="res://assets/sfx/blood-splatter-44101_jogObWJ.mp3" id="3_cebk7"]
 [ext_resource type="AudioStream" uid="uid://bx06otatevdtf" path="res://assets/sfx/zombie/zombie-dying.mp3" id="4_juihx"]
-[ext_resource type="AudioStream" uid="uid://61e2v6rdwnn2" path="res://assets/sfx/zombie/zombie-hit.mp3" id="5_qvnls"]
+[ext_resource type="AudioStream" uid="uid://coymrqivwyl21" path="res://assets/sfx/hurt1.mp3" id="5_42bns"]
 [ext_resource type="AudioStream" uid="uid://b4llcm36p7vbd" path="res://assets/sfx/zombie/zombie-dialog.mp3" id="6_nqo60"]
-[ext_resource type="Texture2D" uid="uid://cyofl1fdap6se" path="res://assets/blood.png" id="7_tj5ku"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pc74v"]
 atlas = ExtResource("2_tj5ku")
@@ -162,11 +161,6 @@ radius = 15.999998
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yveyc"]
 size = Vector2(61.5, 65.5)
 
-[sub_resource type="Curve" id="Curve_cebk7"]
-_limits = [-360.0, 360.0, 0.0, 1.0]
-_data = [Vector2(0.20930234, 157.75287), 0.0, 0.0, 0, 0, Vector2(0.43023258, 109.21353), -2529.9272, -2529.9272, 0, 0, Vector2(0.7441861, -93.03369), 0.0, -12832.3545, 0, 0]
-point_count = 3
-
 [node name="basic_enemy" type="CharacterBody2D"]
 collision_layer = 128
 collision_mask = 128
@@ -208,31 +202,8 @@ stream = ExtResource("4_juihx")
 volume_db = -3.029
 
 [node name="hit" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("5_qvnls")
+stream = ExtResource("5_42bns")
 volume_db = -2.239
 
 [node name="dialogue" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("6_nqo60")
-
-[node name="blood" type="CPUParticles2D" parent="."]
-position = Vector2(-5, -5)
-emitting = false
-amount = 15
-texture = ExtResource("7_tj5ku")
-lifetime = 0.37
-one_shot = true
-preprocess = 1.9
-explosiveness = 1.0
-randomness = 0.46
-lifetime_randomness = 0.15
-emission_shape = 1
-emission_sphere_radius = 14.2
-particle_flag_align_y = true
-spread = 135.93
-initial_velocity_max = 72.16
-angular_velocity_curve = SubResource("Curve_cebk7")
-linear_accel_max = 100.0
-radial_accel_max = 100.0
-tangential_accel_max = 100.0
-scale_amount_min = 0.1
-scale_amount_max = 0.2

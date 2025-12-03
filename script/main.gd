@@ -40,13 +40,20 @@ var cleanup_duration: float = 10.0
 @onready var notification_label: Label = $UI/labels/Notification
 @onready var current_ammo_label: Label = $UI/labels/Current_Ammo
 @onready var current_weapon_label: Label = $UI/labels/Current_weapon
-@onready var restart_button: Button = %retry
 @onready var home: Button = $UI/GameOver/PanelContainer/home
 @onready var resume_button: Button = $UI/PauseMenu/NinePatchRect/resume
+@onready var menu: Button = $UI/PauseMenu/NinePatchRect/menu
+
+# -- Game Over ---
+@onready var gameover_home: Button = $UI/GameOver/PanelContainer/home
+@onready var restart_button: Button = %retry
+@onready var totalkills_label: Label = $UI/GameOver/PanelContainer/MarginContainer/VBoxContainer/totalkills_label
+@onready var total_time: Label = $UI/GameOver/PanelContainer/MarginContainer/VBoxContainer/total_time
+@onready var money_earned: Label = $UI/GameOver/PanelContainer/MarginContainer/VBoxContainer/money_earned
 
 # --- Audio ---
 @onready var ambiance: AudioStreamPlayer2D = $Sfx/ambiance
-
+@onready var scream: AudioStreamPlayer = $scream
 # --- Inventory -----
 var inventory = []
 
@@ -74,6 +81,9 @@ var current_store: StaticBody2D = null
 # --- Settings ---
 @export var starting_currency: int = 0
 @export var debug_mode: bool = false
+
+# --- Main Menu Scene ---
+@export_file("*.tscn") var main_menu_scene: String = "res://scene/menu/main_menu.tscn"
 
 # --- Enemy Wave Unlocks ---
 @export var special_enemy_unlock_wave: int = 5  # Wave when special enemy starts spawning
@@ -122,6 +132,14 @@ func _ready():
 	
 	if resume_button:
 		resume_button.pressed.connect(resume_game)
+	
+	# Connect menu button
+	if menu:
+		menu.pressed.connect(go_to_main_menu)
+	
+	# Connect home button
+	if gameover_home:
+		gameover_home.pressed.connect(go_to_main_menu)
 	
 	update_ui()
 	
@@ -188,6 +206,7 @@ func start_preparation_phase():
 	show_notification("Preparation Phase - Get Ready!")
 
 func start_next_wave():
+	scream.play()
 	current_wave += 1
 	current_state = GameState.WAVE_ACTIVE
 	wave_timer = wave_duration
@@ -394,6 +413,8 @@ func get_weapon_icon(weapon_name: String) -> Texture2D:
 			return load("res://assets/weapons/AK-47/ak_47.png")
 		"Revolver":
 			return load("res://assets/weapons/Revolver/revolver-icon.png")
+		"Rocket Launcher":
+			return load("res://assets/weapons/Rocket_Launcher/rocket_launcher.png")
 		_:
 			return null  # Return null if no icon found
 
@@ -449,9 +470,19 @@ func show_notification(message: String, duration: float = 5.0) -> void:
 			notification_label.visible = false
 
 func format_time(seconds: float) -> String:
-	var mins = float(seconds) / 60
+	var mins = int(seconds) / 60
 	var secs = int(seconds) % 60
 	return "%02d:%02d" % [mins, secs]
+
+func format_time_detailed(seconds: float) -> String:
+	var hours = int(seconds) / 3600
+	var minutes = (int(seconds) % 3600) / 60
+	var secs = int(seconds) % 60
+	
+	if hours > 0:
+		return "%02d:%02d:%02d" % [hours, minutes, secs]
+	else:
+		return "%02d:%02d" % [minutes, secs]
 #endregion
 
 #region Currency System
@@ -486,11 +517,51 @@ func kill_all_enemies():
 func game_over():
 	if current_state == GameState.GAME_OVER:
 		return
-		
+	
 	current_state = GameState.GAME_OVER
+	
+	# Update game over screen with stats
+	update_game_over_display()
+	
+	# Save game stats to global save system
+	save_game_stats()
 	
 	if game_over_screen:
 		game_over_screen.visible = true
+
+func update_game_over_display():
+	# Update the game over screen labels with current stats
+	if totalkills_label:
+		totalkills_label.text = "Total Kills: %d" % total_kills
+	
+	if total_time:
+		total_time.text = "Survival Time: %s" % format_time_detailed(game_time)
+	
+	if money_earned:
+		money_earned.text = "Money Earned: $%d" % current_currency
+
+func save_game_stats() -> void:
+	# Check if SaveSystem autoload exists
+	if Engine.has_singleton("SaveSystem"):
+		var save_system = Engine.get_singleton("SaveSystem")
+		if save_system and save_system.has_method("record_game_stats"):
+			save_system.record_game_stats(
+				total_kills,
+				current_wave,
+				game_time,
+				current_currency
+			)
+	elif has_node("/root/SaveSystem"):
+		var save_system = get_node("/root/SaveSystem")
+		if save_system and save_system.has_method("record_game_stats"):
+			save_system.record_game_stats(
+				total_kills,
+				current_wave,
+				game_time,
+				current_currency
+			)
+	else:
+		print("SaveSystem not found. Stats not saved.")
 
 func restart_game():
 	if game_over_screen:
@@ -618,6 +689,73 @@ func setup_store_ui_signals(store: StaticBody2D):
 		sell_list.item_selected.connect(store._on_sell_item_selected)
 #endregion
 
+#region Main Menu Navigation
+func go_to_main_menu() -> void:
+	print("Going to main menu...")
+	
+	# Play button sound if available
+	play_button_sound()
+	
+	# Clean up game state
+	cleanup_before_menu()
+	
+	# Change to main menu scene
+	change_to_main_menu()
+
+func play_button_sound() -> void:
+	# Add an AudioStreamPlayer for button sounds if you want
+	var button_sound = $ButtonSound if has_node("ButtonSound") else null
+	if button_sound:
+		button_sound.pitch_scale = randf_range(0.9, 1.1)
+		button_sound.play()
+
+func cleanup_before_menu() -> void:
+	# Stop all game processes
+	current_state = GameState.GAME_OVER
+	
+	# Stop ambiance sound
+	if ambiance and ambiance.playing:
+		ambiance.stop()
+	
+	# Clear all enemies
+	clear_remaining_enemies()
+	
+	# Clear all projectiles
+	var bullets = get_tree().get_nodes_in_group("bullet")
+	for bullet in bullets:
+		if is_instance_valid(bullet):
+			bullet.queue_free()
+	
+	# Clear all spawners
+	for spawner in spawners:
+		if is_instance_valid(spawner) and spawner.has_method("stop_spawning"):
+			spawner.stop_spawning()
+	
+	# Clear any remaining UI
+	if shop_ui.visible:
+		store_ui.play_backwards("open")
+	
+	if pause_menu.visible:
+		pause_ui.play_backwards("pause_menu")
+		pause_menu.visible = false
+	
+	if game_over_screen.visible:
+		game_over_screen.visible = false
+
+func change_to_main_menu() -> void:
+	# Method 1: Direct scene change
+	if main_menu_scene and main_menu_scene != "":
+		if ResourceLoader.exists(main_menu_scene):
+			get_tree().change_scene_to_file(main_menu_scene)
+		else:
+			print("ERROR: Main menu scene not found at: ", main_menu_scene)
+			# Fallback to default
+			get_tree().change_scene_to_file("res://scene/menu.tscn")
+	else:
+		# Default fallback path
+		get_tree().change_scene_to_file("res://scene/menu.tscn")
+#endregion
+
 #region UI Hover Detection
 func connect_ui_elements():
 	# Connect all UI elements that should block shooting
@@ -710,6 +848,15 @@ func get_total_kills() -> int:
 
 func get_game_time() -> float:
 	return game_time
+
+func get_formatted_game_time() -> String:
+	return format_time_detailed(game_time)
+
+func get_money_earned() -> int:
+	return current_currency
+
+func get_current_wave_reached() -> int:
+	return current_wave
 
 func is_game_running() -> bool:
 	return current_state != GameState.GAME_OVER and current_state != GameState.PAUSED

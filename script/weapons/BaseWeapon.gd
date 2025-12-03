@@ -11,6 +11,11 @@ var weapon_name: String = "Base Weapon"
 @export var reload_time: float = 2.0
 @export var price: int = 0
 
+# --- Projectile Settings ---
+@export var projectile_scene: PackedScene  # Can be set in inspector
+@export var projectile_speed: float = 1800.0
+@export var projectile_gravity: float = 0.0  # For rockets/arc projectiles
+
 # --- Critical Hit System ---
 @export var crit_chance: float = 10.0
 @export var crit_multiplier: float = 2.0
@@ -63,14 +68,19 @@ func _ready() -> void:
 	
 	current_ammo = magazine_size
 	
+	# Use Bullet as default projectile if none specified
+	if projectile_scene == null:
+		projectile_scene = Bullet
+	
 	if not is_equipped:
 		setup_as_pickup()
 	else:
 		set_status(WeaponStatus.ACTIVE)
+
+
 func _process(delta: float) -> void:
 	if not is_equipped:
 		return
-	
 	
 	recoil_offset = recoil_offset.move_toward(Vector2.ZERO, recoil_recover_speed * delta)
 	position = original_position + recoil_offset
@@ -103,29 +113,42 @@ func shoot() -> void:
 	var is_crit = randf() < (crit_chance / 100.0)
 	var final_damage = damage * (crit_multiplier if is_crit else 1.0)
 	
-	create_bullet(final_damage, is_crit)
+	create_projectile(final_damage, is_crit)
 	apply_recoil()
 	play_shoot_sound(is_crit)
 	
 	if current_ammo <= 0:
 		set_status(WeaponStatus.EMPTY)
 		reload()
-func create_bullet(bullet_damage: int, is_critical: bool) -> void:
-	var bullet_instance = Bullet.instantiate()
-	get_tree().current_scene.add_child(bullet_instance)
-	bullet_instance.global_position = marker_2d.global_position
-	bullet_instance.rotation = marker_2d.global_rotation
-	bullet_instance.damage = bullet_damage
-	bullet_instance.speed = 1800.0
+
+
+func create_projectile(projectile_damage: int, is_critical: bool) -> void:
+	var projectile_instance = projectile_scene.instantiate()
+	get_tree().current_scene.add_child(projectile_instance)
+	projectile_instance.global_position = marker_2d.global_position
+	projectile_instance.rotation = marker_2d.global_rotation
 	
-	if is_critical and bullet_instance.has_method("set_critical"):
-		bullet_instance.set_critical(true)
+	# Set basic projectile properties
+	projectile_instance.damage = projectile_damage
+	
+	# Set speed if projectile has speed property
+	if projectile_instance.has_method("set_speed"):
+		projectile_instance.set_speed(projectile_speed)
+	elif projectile_instance.has_property("speed"):
+		projectile_instance.speed = projectile_speed
+	# Set critical status
+	if is_critical and projectile_instance.has_method("set_critical"):
+		projectile_instance.set_critical(true)
+
+
 func apply_recoil() -> void:
 	var strength = abs(recoil_strength)
 	if global_scale.x > 0:
 		recoil_offset = Vector2(-strength, 0)
 	else:
 		recoil_offset = Vector2(strength, 0)
+
+
 func play_shoot_sound(is_critical: bool) -> void:
 	if shooting_sound:
 		if is_critical:
@@ -133,9 +156,13 @@ func play_shoot_sound(is_critical: bool) -> void:
 		else:
 			shooting_sound.pitch_scale = randf_range(0.9, 1.1)
 		shooting_sound.play()
+
+
+func set_projectile_scene(new_scene: PackedScene) -> void:
+	projectile_scene = new_scene
 #endregion
 
-#region Reload System
+#region Reload System (same as before)
 func reload() -> void:
 	if is_reloading or not is_equipped or current_ammo == magazine_size:
 		return
@@ -158,6 +185,8 @@ func reload() -> void:
 		complete_reload()
 	else:
 		stop_reload()
+
+
 func stop_reload() -> void:
 	if is_reloading:
 		if reload_timer and reload_timer.time_left > 0:
@@ -170,6 +199,8 @@ func stop_reload() -> void:
 		
 		on_reload_stop()
 		set_status(WeaponStatus.ACTIVE)
+
+
 func complete_reload() -> void:
 	current_ammo = magazine_size
 	is_reloading = false
@@ -177,7 +208,7 @@ func complete_reload() -> void:
 	set_status(WeaponStatus.ACTIVE)
 #endregion
 
-#region Status Management
+#region Status Management (same as before)
 func set_status(new_status: WeaponStatus) -> void:
 	if current_status == new_status:
 		return
@@ -201,11 +232,15 @@ func set_status(new_status: WeaponStatus) -> void:
 			pass
 		WeaponStatus.JAMMED:
 			pass
+
+
 func update_ammo_status() -> void:
 	if current_ammo <= 0 and current_status != WeaponStatus.RELOADING:
 		set_status(WeaponStatus.EMPTY)
 	elif current_ammo > 0 and current_status == WeaponStatus.EMPTY:
 		set_status(WeaponStatus.ACTIVE)
+
+
 func get_status_text() -> String:
 	match current_status:
 		WeaponStatus.DROPPED: return "DROPPED"
@@ -218,7 +253,7 @@ func get_status_text() -> String:
 		_: return "UNKNOWN"
 #endregion
 
-#region Pickup System
+#region Pickup System (same as before)
 func setup_as_pickup() -> void:
 	is_equipped = false
 	visible = true
@@ -229,6 +264,8 @@ func setup_as_pickup() -> void:
 		collision_shape.set_deferred("disabled", false)
 	
 	modulate = Color(1, 1, 1, 0.8)
+
+
 func on_picked_up(by_player: Node2D) -> void:
 	if is_equipped:
 		return
@@ -245,15 +282,21 @@ func on_picked_up(by_player: Node2D) -> void:
 	
 	modulate = Color(1, 1, 1, 1)
 	set_status(WeaponStatus.EQUIPPED)
+
+
 func on_dropped() -> void:
 	is_equipped = false
 	player = null
 	stop_reload()
 	set_status(WeaponStatus.DROPPED)
+
+
 func on_player_entered_detection() -> void:
 	if not is_equipped and not is_player_nearby:
 		is_player_nearby = true
 		modulate = Color(0.15, 1.191, 0.0, 0.902)
+
+
 func on_player_exited_detection() -> void:
 	if not is_equipped and is_player_nearby:
 		is_player_nearby = false
@@ -270,20 +313,31 @@ func get_weapon_data() -> Dictionary:
 		"fire_rate": fire_rate,
 		"crit_chance": crit_chance,
 		"crit_multiplier": crit_multiplier,
+		"projectile_speed": projectile_speed,
 		"current_status": get_status_text(),
 		"price": price
 	}
+
+
 func refill_ammo() -> void:
 	current_ammo = magazine_size
 	if current_status == WeaponStatus.EMPTY:
 		set_status(WeaponStatus.ACTIVE)
+
+
 func get_price() -> int:
 	return price
+
+
 func get_current_status() -> WeaponStatus:
 	return current_status
+
+
 func on_weapon_unequipped() -> void:
 	stop_reload()
 	set_status(WeaponStatus.EQUIPPED)
+
+
 func set_weapon_active(active: bool) -> void:
 	if active:
 		set_status(WeaponStatus.ACTIVE)
@@ -292,6 +346,8 @@ func set_weapon_active(active: bool) -> void:
 		stop_reload()
 		set_status(WeaponStatus.EQUIPPED)
 		set_process(false)
+
+
 func clear_jam() -> void:
 	if current_status == WeaponStatus.JAMMED:
 		set_status(WeaponStatus.ACTIVE)
@@ -300,8 +356,12 @@ func clear_jam() -> void:
 #region Hooks (Override in Child Classes)
 func on_reload_start() -> void:
 	pass
+
+
 func on_reload_stop() -> void:
 	pass
+
+
 func on_reload_complete() -> void:
 	pass
 #endregion

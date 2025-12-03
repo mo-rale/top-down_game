@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://icq3a6g71po5"]
+
+[ext_resource type="Script" uid="uid://dqushvuwpqlhs" path="res://script/rock_throw.gd" id="1_17c5n"]
+[ext_resource type="Texture2D" uid="uid://cpupftb2jls32" path="res://assets/rock.png" id="2_17c5n"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_odbmf"]
+radius = 48.6621
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_17c5n"]
+
+[node name="rock_throw" type="CharacterBody2D"]
+collision_layer = 2
+script = ExtResource("1_17c5n")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(5.5131583, 5.5131583)
+texture = ExtResource("2_17c5n")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_odbmf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_17c5n")
