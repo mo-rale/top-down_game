@@ -1,3 +1,7 @@
+# UNDERTOWN - ZOMBIE SHOOTER GAME
+
+![Version](https://img.shields.io/badge/version-1.2.0-blue)
+
 
 # 🧟‍♂️ UNDERTOWN (Godot Engine)
 
@@ -27,14 +31,22 @@ This project is still **in development**, with new weapons and features being ad
 - Wave-based zombie spawning system  
 - Player movement and shooting mechanics  
 - Health and damage system  
-- Weapon switching (limited selection)
+- Weapon switching (limited to 3)
+- BOSS only 1
+- 2 NEW Weapons(missile launcher, Ak47)
+- Sound Effects and Music Background
+- Main menu and pause menu
+- Minor Animations
+- 3 enemy Types  
 
 ### 🛠️ In Development
 - New weapon types (shotguns, rifles, explosives, etc.)  
 - Power-ups and upgrades  
-- Improved enemy AI and animations  
-- Sound effects and background music  
-- Main menu and pause menu  
+- Improved enemy AI and animations
+- More Enemy types and Bosses
+- building sysytem
+- inventory system
+- collectable items
 
 ---
 
@@ -48,7 +60,7 @@ This project is still **in development**, with new weapons and features being ad
 
 1. **Clone or Download the Project**
    ```bash
-   git clone https://github.com/mo-rale/top-down_game.git
+   git clone https://github.com/mo-rale/UNDERTOWN.git
    ```
    Or download the ZIP file and extract it to a folder.
 
@@ -115,7 +127,7 @@ If you want to use this as a reusable module:
 1. **Clone into modules folder:**
    ```bash
    cd your-godot-project/
-   git clone https://github.com/mo-rale/top-down_game.git modules/zombie_shooter
+   git clone https://github.com/mo-rale/UNDERTOWN/zombie_shooter
    ```
 
 2. **Recompile Godot** with the module included
